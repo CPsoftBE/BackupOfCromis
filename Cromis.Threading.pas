@@ -831,7 +831,7 @@ begin
 
   while not AResult and (TryCount < 3) do
   begin
-    AResult := PostMessage(FHWND, WM_TASK_MESSAGE, WParam(Pointer(FCurrentMessage)), LParam(Addr(TMethod(FOnTaskMessage))));
+    AResult := PostMessage(FHWND, WM_TASK_MESSAGE, Integer(Pointer(FCurrentMessage)), Integer(Addr(TMethod(FOnTaskMessage))));
     Inc(TryCount);
   end;
 
@@ -844,17 +844,19 @@ end;
 
 procedure TTask.SendMessageSync(const Timeout: Integer);
 var
-  AResult: LRESULT;
+  WParam: Integer;
+  AResult: Integer;
   TryCount: Integer;
   Response: {$IF CompilerVersion >= 23}PDWORD_PTR{$ELSE}Cardinal{$IFEND};
 begin
   {$IF CompilerVersion >= 23}Response := nil{$ELSE}Response := 0{$IFEND};
+  WParam :=  Integer(Pointer(FCurrentMessage));
   TryCount := 0;
   AResult := 1;
 
   while (AResult <> 0) and (TryCount < 3) do
   begin
-    AResult := SendMessageTimeout(FHWND, WM_TASK_MESSAGE, WParam(Pointer(FCurrentMessage)), LParam(Addr(TMethod(FOnTaskMessage))), SMTO_BLOCK, Timeout, Response);
+    AResult := SendMessageTimeout(FHWND, WM_TASK_MESSAGE, WParam, Integer(Addr(TMethod(FOnTaskMessage))), SMTO_BLOCK, Timeout, Response);
     Inc(TryCount);
   end;
 
