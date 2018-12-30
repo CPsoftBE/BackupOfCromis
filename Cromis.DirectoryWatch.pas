@@ -54,6 +54,11 @@
  *  - Added OnError event handler, so user get notified of all errors
  *  - Check the result of ReadDirectoryChangesW with GetOverlappedResult.
       This way we can check if buffer overflow happens and trigger an error.
+ * 30/12/2018 (2.0.0) Limagito
+ *  - Added Cromis.Utils unit
+ *  - Replaced AllocateHWnd by TSAllocateHWnd
+ *  - Replaced DeallocateHWnd by TSDeallocateHWnd
+ *  - Removed DirectoryWatch Procedure DeallocateHWnd
  * ============================================================================
 *)
 
@@ -62,7 +67,9 @@ unit Cromis.DirectoryWatch;
 interface
 
 uses
-   Windows, SysUtils, Classes, Messages, SyncObjs, DateUtils;
+   Windows, SysUtils, Classes, Messages, SyncObjs, DateUtils,
+  // cromis units
+  Cromis.Utils;
 
 const
   FILE_NOTIFY_CHANGE_FILE_NAME   = $00000001;
@@ -115,7 +122,6 @@ type
     procedure SetWatchOptions(const Value: TWatchOptions);
     procedure SetWatchActions(const Value: TWatchActions);
     procedure SetWatchSubTree(const Value: Boolean);
-    procedure DeallocateHWnd(Wnd: HWND);
     function MakeFilter: Integer;
   protected
     procedure Change; virtual;
@@ -415,34 +421,17 @@ begin
   Result := FWatchThread <> nil;
 end;
 
-procedure TDirectoryWatch.DeallocateHWnd(Wnd: HWND);
-var
-  Instance: Pointer;
-begin
-  Instance := Pointer(GetWindowLong(Wnd, GWL_WNDPROC));
-
-  if Instance <> @DefWindowProc then
-  begin
-    { make sure we restore the default
-      windows procedure before freeing memory }
-    SetWindowLong(Wnd, GWL_WNDPROC, Longint(@DefWindowProc));
-    FreeObjectInstance(Instance);
-  end;
-
-  DestroyWindow(Wnd);
-end;
-
 destructor TDirectoryWatch.Destroy;
 begin
   Stop;
-  DeallocateHWnd(FWndHandle);
+  TSDeallocateHWnd(FWndHandle);
 
   inherited Destroy;
 end;
 
 constructor TDirectoryWatch.Create;
 begin
-   FWndHandle := AllocateHWnd(WatchWndProc);
+   FWndHandle := TSAllocateHWnd(WatchWndProc);
    FWatchSubtree := True;
    FBufferSize := 32;
 
@@ -451,8 +440,6 @@ begin
    FWatchOptions := [woFileName, woDirName, woAttributes, woSize, woLastWrite,
                      woLastAccess, woCreation, woSecurity];
 end;
-
-
 
 procedure TDirectoryWatch.SetWatchActions(const Value: TWatchActions);
 begin
