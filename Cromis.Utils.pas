@@ -128,8 +128,8 @@ begin
     SetWindowLongPtr(Result, GWL_METHODDATA, NativeInt(TMethod(wndProcMethod).Data));
     SetWindowLongPtr(Result, GWL_METHODCODE, NativeInt(TMethod(wndProcMethod).Code));
     {$ELSE}
-    SetWindowLong(Result, GWL_METHODDATA, NativeInt(TMethod(wndProcMethod).Data));
-    SetWindowLong(Result, GWL_METHODCODE, NativeInt(TMethod(wndProcMethod).Code));
+    SetWindowLong(Result, GWL_METHODDATA, cardinal(TMethod(wndProcMethod).Data));
+    SetWindowLong(Result, GWL_METHODCODE, cardinal(TMethod(wndProcMethod).Code));
     {$ENDIF ~CPUX64}
     Inc(GTSWndHandlerCount);
   finally
