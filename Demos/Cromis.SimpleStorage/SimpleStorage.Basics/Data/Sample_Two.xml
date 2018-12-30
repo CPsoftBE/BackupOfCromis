@@ -1,0 +1,16 @@
+﻿<Demografija>
+  <Males>
+    <Janez>Novak</Janez>
+    <Darko>Gazvoda</Darko>
+    <Mitja>Dežela</Mitja>
+    <Tilen>Medved</Tilen>
+  </Males>
+  <Females>
+    <Person Name="Marija">Gorenjska</Person>
+    <Person Name="Tanja">Notranjska</Person>
+    <Person Name="Maja">Primorska</Person>
+    <Person Name="Tadeja">Pomurje</Person>
+    <Person Name="Irma">Posočje</Person>
+    <Person Name="Marija">Notranjska</Person>
+  </Females> 
+</Demografija>

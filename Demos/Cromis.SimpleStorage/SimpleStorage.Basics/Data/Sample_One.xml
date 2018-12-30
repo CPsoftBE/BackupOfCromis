@@ -1,0 +1,20 @@
+﻿<Books>
+  <English>
+    <Science>
+      <Mathematics Difficulty="High">5</Mathematics>
+      <Physics Difficulty="Low">0</Physics>
+      <Computers Difficulty="Medium">8</Computers>
+      <Engineering Difficulty="Low">4</Engineering>
+      <Electoronics Difficulty="High">8</Electoronics>
+      <Biology>
+        <Microbiology Difficulty="High">4</Microbiology>
+        <Undefined Difficulty="Low">3</Undefined>
+      </Biology>
+    </Science>
+    <Musical>
+      <Classic>2</Classic>
+      <Etno>2</Etno>
+      <Pop>8</Pop>
+    </Musical>
+  </English>
+</Books>

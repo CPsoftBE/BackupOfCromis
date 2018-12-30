@@ -1,0 +1,506 @@
+﻿<CaseData SaveDate="2010-07-08T10:34:25.635" Version="5">
+  <Parameters>
+    <TotalDataTime>2669979</TotalDataTime>
+    <RenderMode>JS</RenderMode>
+    <Language>SLO</Language>
+    <RunMode>PRODUCTION</RunMode>
+    <TimeOut>0</TimeOut>
+    <Provider>CAPI</Provider>
+    <StartDate>2010-07-08T09:49:55.088</StartDate>
+    <QID>13C7B285EA9ADD4384D1D64283541250420AF7E3</QID>
+    <SampleID>41</SampleID>
+    <SubjectID>1137</SubjectID>
+    <SubjectIP>82.192.33.199</SubjectIP>
+    <Referrer>http://surveys.valicon.net/CAPI/MER222_kvartal3obisk1</Referrer>
+    <UserName>6431</UserName>
+    <DataTime>2669889</DataTime>
+    <LastQuestionIndex>266</LastQuestionIndex>
+    <Valid>1</Valid>
+    <EndDate>2010-07-08T10:34:25.620</EndDate>
+    <Finished>1</Finished>
+  </Parameters>
+  <Answers>
+    <who et="7905" date="2010-07-08T09:50:03.088">1</who>
+    <anketar et="4898" date="2010-07-08T09:50:12.932">6431</anketar>
+    <id et="0" date="2010-07-08T09:50:03.088">1137</id>
+    <id2 et="4898" date="2010-07-08T09:50:12.948">1137</id2>
+    <drzava et="0" date="2010-07-08T09:50:12.963">1</drzava>
+    <tip et="0" date="2010-07-08T09:50:12.979">2</tip>
+    <DD et="3643" date="2010-07-08T09:50:45.791">7</DD>
+    <MM et="3643" date="2010-07-08T09:50:45.791">7</MM>
+    <LL et="3643" date="2010-07-08T09:50:45.791">2010</LL>
+    <ura1 et="3643" date="2010-07-08T09:50:45.791">11</ura1>
+    <minute1 et="3643" date="2010-07-08T09:50:45.791">54</minute1>
+    <meritev et="3643" date="2010-07-08T09:50:45.791">3</meritev>
+    <meritev2 et="3643" date="2010-07-08T09:50:45.791">1</meritev2>
+    <vredn et="3643" date="2010-07-08T09:50:45.791">4.07</vredn>
+    <obiodd et="3643" date="2010-07-08T09:50:45.791">1-2-3-4</obiodd>
+    <tz01 et="10646" date="2010-07-08T09:52:32.276">5</tz01>
+    <tz_op1 et="10646" date="2010-07-08T09:52:32.276">Okolica je lepo urejena , vidi se da nekdo skrbi za to.</tz_op1>
+    <tz02 et="10646" date="2010-07-08T09:52:32.276">5</tz02>
+    <tz_op2 et="10646" date="2010-07-08T09:52:32.276">Okolica je čista-pometena.</tz_op2>
+    <tn01 et="10646" date="2010-07-08T09:52:32.276">5</tn01>
+    <tn_op1 et="10646" date="2010-07-08T09:52:32.276">Čisto- nikjer smeti,stekla pomita.</tn_op1>
+    <tn02 et="10646" date="2010-07-08T09:52:32.276">5</tn02>
+    <tn_op2 et="10646" date="2010-07-08T09:52:32.276">Na splošno je trgovina lepo urejena-pospravljena.</tn_op2>
+    <tn03 et="10646" date="2010-07-08T09:52:32.276">5</tn03>
+    <tn_op3 et="10646" date="2010-07-08T09:52:32.276">Čista in pomita.</tn_op3>
+    <tn05 et="9917" date="2010-07-08T09:54:11.463">4</tn05>
+    <tn_op5 et="9917" date="2010-07-08T09:54:11.463">Lepo založena ,razen pri zelenjavi.</tn_op5>
+    <tn06 et="9917" date="2010-07-08T09:54:11.463">5</tn06>
+    <tn_op6 et="9917" date="2010-07-08T09:54:11.463">Odzivni - takoj te opazijo.</tn_op6>
+    <tv01 et="9917" date="2010-07-08T09:54:11.463">4</tv01>
+    <tv_op1 et="9917" date="2010-07-08T09:54:11.463">Ob mojem prihodu je bilo vozičkov dovolj-košarice nobene.</tv_op1>
+    <tv02 et="9917" date="2010-07-08T09:54:11.463">5</tv02>
+    <tv_op2 et="9917" date="2010-07-08T09:54:11.463">Vozički lepo pospravljeni.</tv_op2>
+    <tn04 et="9917" date="2010-07-08T09:54:11.463">5</tn04>
+    <tn_op4 et="9917" date="2010-07-08T09:54:11.463">Lepa , svetla in prijazna.</tn_op4>
+    <koment et="43078" date="2010-07-08T09:55:37.635">Ob prihodu v trgovino so me takoj opazili in pozdravili.Trgovina je čista in lepo založena,zaposleni prijazni- v tej trgovini je bilo prijetno nakupovati, ker se vidi , da jim je vsaka stranka pomembna.Lepo!Z veseljem se bom še kdaj vrnila.</koment>
+    <sz et="43078" date="2010-07-08T09:55:37.635">1</sz>
+    <zp00_1 et="5653" date="2010-07-08T09:56:34.182">2</zp00_1>
+    <zp01_1 et="5653" date="2010-07-08T09:56:34.182">0</zp01_1>
+    <zp02_1 et="5653" date="2010-07-08T09:56:34.182">1</zp02_1>
+    <zp03_1 et="5653" date="2010-07-08T09:56:34.182">5</zp03_1>
+    <opom1_1 et="5653" date="2010-07-08T09:56:34.182">Dobre volje.</opom1_1>
+    <zp03x_1 et="5653" date="2010-07-08T09:56:34.182">1</zp03x_1>
+    <zp04_1 et="5653" date="2010-07-08T09:56:34.182">1</zp04_1>
+    <zp05_1 et="5653" date="2010-07-08T09:56:34.182">1</zp05_1>
+    <zp06_1 et="5653" date="2010-07-08T09:56:34.182">5</zp06_1>
+    <opom2_1 et="5653" date="2010-07-08T09:56:34.182">Zelo prijazna.</opom2_1>
+    <zp07_1 et="10500" date="2010-07-08T09:58:19.198">5</zp07_1>
+    <zp_op7 et="10500" date="2010-07-08T09:58:19.198">Hitri odziv.</zp_op7>
+    <zp08_1 et="10500" date="2010-07-08T09:58:19.198">5</zp08_1>
+    <zp_op8 et="10500" date="2010-07-08T09:58:19.198">Zelo učinkovita.</zp_op8>
+    <zu01_1 et="10500" date="2010-07-08T09:58:19.198">5</zu01_1>
+    <opom3_1 et="10500" date="2010-07-08T09:58:19.198">Čista in urejena.</opom3_1>
+    <zs01_1 et="10500" date="2010-07-08T09:58:19.198">5</zs01_1>
+    <opom4_1 et="10500" date="2010-07-08T09:58:19.198">Takoj je povedala , da imajo samo dve vrsti-Jonagold in Idared.ene so bolj sladke od drugih.</opom4_1>
+    <zs02_1 et="10500" date="2010-07-08T09:58:19.198">5</zs02_1>
+    <opom5_1 et="10500" date="2010-07-08T09:58:19.198">Takoj se je odločila ja Jonagold , ker se ji osebno zdijo boljše za zavitek.</opom5_1>
+    <zr01 et="1851" date="2010-07-08T09:58:26.604">1</zr01>
+    <zr02 et="1851" date="2010-07-08T09:58:26.604">1</zr02>
+    <zr03 et="1851" date="2010-07-08T09:58:26.604">1</zr03>
+    <zr04 et="1851" date="2010-07-08T09:58:26.604">5</zr04>
+    <zr04_op et="6665" date="2010-07-08T09:59:33.276">Zelo prijazna.</zr04_op>
+    <zu02_1 et="6665" date="2010-07-08T09:59:33.276">1</zu02_1>
+    <zu05_1 et="6665" date="2010-07-08T09:59:33.276">5</zu05_1>
+    <opom6_1 et="6665" date="2010-07-08T09:59:33.276">Čista in sveža.</opom6_1>
+    <ou1_1 et="6665" date="2010-07-08T09:59:33.276">5</ou1_1>
+    <opom7_1 et="6665" date="2010-07-08T09:59:33.276">Lepo urejeni.</opom7_1>
+    <oi1_1 et="6665" date="2010-07-08T09:59:33.276">5</oi1_1>
+    <opom8_1 et="6665" date="2010-07-08T09:59:33.276">Vsi izdelki imajo ceno.</opom8_1>
+    <oi2_1 et="6665" date="2010-07-08T09:59:33.276">5</oi2_1>
+    <opom9_1 et="6665" date="2010-07-08T09:59:33.276">Pregledne- pod izdelki.</opom9_1>
+    <ou2_1 et="18912" date="2010-07-08T10:02:42.416">5</ou2_1>
+    <opom10_1 et="18912" date="2010-07-08T10:02:42.416">Kar je bilo na policah je bilo dobre kakovosti.</opom10_1>
+    <ou3_1 et="18912" date="2010-07-08T10:02:42.416">5</ou3_1>
+    <opom11_1 et="18912" date="2010-07-08T10:02:42.416">Čisto in pomito.</opom11_1>
+    <ou4_1 et="18912" date="2010-07-08T10:02:42.416">3</ou4_1>
+    <opom12_1 et="18912" date="2010-07-08T10:02:42.416">Polovica stvari je manjkalo- čakali so na robo.</opom12_1>
+    <ou5_1 et="18912" date="2010-07-08T10:02:42.416">4</ou5_1>
+    <opom13_1 et="18912" date="2010-07-08T10:02:42.416">Oddelek bi bil zelo privlačen , če bi imeli vse artikle.</opom13_1>
+    <komen1 et="18912" date="2010-07-08T10:02:42.416">Ko me je prodajalka videla, je takoj pristopila , pozdravila , povedala tudi , da imajo trenutno slabšo zalogo , ker čakajo robo , toda potrudila se je svetovati in se odločati tudi med tistim , kar je bilo na zalogi .Vzela si je čas.Lepo!</komen1>
+    <kpp et="18912" date="2010-07-08T10:02:42.416">1</kpp>
+    <zp00_2 et="6108" date="2010-07-08T10:02:48.541">2</zp00_2>
+    <zp02_2 et="3867" date="2010-07-08T10:03:27.229">1</zp02_2>
+    <zp03_2 et="3867" date="2010-07-08T10:03:27.229">5</zp03_2>
+    <opom1_2 et="3867" date="2010-07-08T10:03:27.229">Dobre volje.</opom1_2>
+    <zp03x_2 et="3867" date="2010-07-08T10:03:27.229">1</zp03x_2>
+    <zp04_2 et="3867" date="2010-07-08T10:03:27.229">1</zp04_2>
+    <zp05_2 et="3867" date="2010-07-08T10:03:27.229">1</zp05_2>
+    <zp06_2 et="3867" date="2010-07-08T10:03:27.229">5</zp06_2>
+    <opom2_2 et="3867" date="2010-07-08T10:03:27.229">Zelo prijazna.</opom2_2>
+    <zp07_2 et="3867" date="2010-07-08T10:03:27.229">5</zp07_2>
+    <zp_op7_2 et="3867" date="2010-07-08T10:03:27.229">Hitra odzivnost.</zp_op7_2>
+    <zp08_2 et="14537" date="2010-07-08T10:05:52.604">5</zp08_2>
+    <zp_op8_2 et="14537" date="2010-07-08T10:05:52.604">Delala je hitro in učinkovito.</zp_op8_2>
+    <zu01_2 et="14537" date="2010-07-08T10:05:52.604">5</zu01_2>
+    <opom3_2 et="14537" date="2010-07-08T10:05:52.604">Čista in urjeena.</opom3_2>
+    <zs01_2 et="14537" date="2010-07-08T10:05:52.604">4</zs01_2>
+    <opom4_2 et="14537" date="2010-07-08T10:05:52.604">Takoj je navedla tri vrste kruha:Malnar,Gozdar in Krjavelj.Povedala , da so vsi trije dobri, da pa Krjavelj ostane dolgo svež.</opom4_2>
+    <zs02_2 et="14537" date="2010-07-08T10:05:52.604">5</zs02_2>
+    <opom5_2 et="14537" date="2010-07-08T10:05:52.604">Priporoči Krjavlja- zaradi cene in svežine.</opom5_2>
+    <zs03 et="14537" date="2010-07-08T10:05:52.604">1</zs03>
+    <zs03a et="14537" date="2010-07-08T10:05:52.604">Krjavelj.</zs03a>
+    <zs03b et="6035" date="2010-07-08T10:06:52.963">Grosuplje.</zs03b>
+    <zu02_2 et="6035" date="2010-07-08T10:06:52.963">1</zu02_2>
+    <zu03_2 et="6035" date="2010-07-08T10:06:52.963">1</zu03_2>
+    <zu04_2 et="6035" date="2010-07-08T10:06:52.963">1</zu04_2>
+    <zu05_2 et="6035" date="2010-07-08T10:06:52.963">5</zu05_2>
+    <opom6_2 et="6035" date="2010-07-08T10:06:52.963">Čista in sveža.</opom6_2>
+    <ou1_2 et="6035" date="2010-07-08T10:06:52.963">5</ou1_2>
+    <opom7_2 et="6035" date="2010-07-08T10:06:52.963">Lepo zloženo.</opom7_2>
+    <oi1_2 et="6035" date="2010-07-08T10:06:52.963">5</oi1_2>
+    <opom8_2 et="6035" date="2010-07-08T10:06:52.963">Vsi izdelki imajo ceno.</opom8_2>
+    <oi2_2 et="67168" date="2010-07-08T10:18:04.666">5</oi2_2>
+    <opom9_2 et="67168" date="2010-07-08T10:18:04.666">Cene so lepo vidne.</opom9_2>
+    <ou3_2 et="67168" date="2010-07-08T10:18:04.666">5</ou3_2>
+    <opom10_2 et="67168" date="2010-07-08T10:18:04.666">Čisto in pospravljeno.</opom10_2>
+    <ou4_2 et="67168" date="2010-07-08T10:18:04.666">5</ou4_2>
+    <opom11_2 et="67168" date="2010-07-08T10:18:04.666">Velika izbira.</opom11_2>
+    <ou5_2 et="67168" date="2010-07-08T10:18:04.666">5</ou5_2>
+    <opom12_2 et="67168" date="2010-07-08T10:18:04.666">Lep in privlačen.</opom12_2>
+    <komen2 et="67168" date="2010-07-08T10:18:04.666">Prodajalka je bila prijazna, lepo je svetovala,pozdravila tudi ob odhodu.Videlo se je,da obvlada svoje delo.</komen2>
+    <delik et="67168" date="2010-07-08T10:18:04.666">1</delik>
+    <zp00_3 et="4359" date="2010-07-08T10:18:09.026">2</zp00_3>
+    <zp02_3 et="4559" date="2010-07-08T10:18:54.620">1</zp02_3>
+    <zp03_3 et="4559" date="2010-07-08T10:18:54.620">5</zp03_3>
+    <opom1_3 et="4559" date="2010-07-08T10:18:54.620">Dobre volje.</opom1_3>
+    <zp03x_3 et="4559" date="2010-07-08T10:18:54.620">1</zp03x_3>
+    <zp04_3 et="4559" date="2010-07-08T10:18:54.620">1</zp04_3>
+    <zp05_3 et="4559" date="2010-07-08T10:18:54.620">1</zp05_3>
+    <zp06_3 et="4559" date="2010-07-08T10:18:54.620">5</zp06_3>
+    <opom2_3 et="4559" date="2010-07-08T10:18:54.620">Zelo prijazna.</opom2_3>
+    <zp07_3 et="4559" date="2010-07-08T10:18:54.620">5</zp07_3>
+    <zp_op7_3 et="4559" date="2010-07-08T10:18:54.620">Hitra odzivnost.</zp_op7_3>
+    <zp08_3 et="15111" date="2010-07-08T10:21:25.745">5</zp08_3>
+    <zp_op8_3 et="15111" date="2010-07-08T10:21:25.745">Hitra in učinkovita.</zp_op8_3>
+    <zu01_3 et="15111" date="2010-07-08T10:21:25.745">5</zu01_3>
+    <opom3_3 et="15111" date="2010-07-08T10:21:25.745">Čista in urejena.</opom3_3>
+    <zs01_3 et="15111" date="2010-07-08T10:21:25.745">4</zs01_3>
+    <opom4_3 et="15111" date="2010-07-08T10:21:25.745">Takoj je naštela tri vrste:Poli,peč.puranja prsa in pišč.prsa .Pove , da so peč.puranja prsa najbolj sočna.</opom4_3>
+    <zs02_3 et="15111" date="2010-07-08T10:21:25.745">5</zs02_3>
+    <opom5_3 et="15111" date="2010-07-08T10:21:25.745">Priporoča peč.puranja prsa , ker so zelo okusna.</opom5_3>
+    <zu02_3 et="15111" date="2010-07-08T10:21:25.745">1</zu02_3>
+    <zu03_3 et="15111" date="2010-07-08T10:21:25.745">1</zu03_3>
+    <zu04_3 et="6532" date="2010-07-08T10:22:31.088">1</zu04_3>
+    <zu05_3 et="6532" date="2010-07-08T10:22:31.088">5</zu05_3>
+    <opom6_3 et="6532" date="2010-07-08T10:22:31.088">Čista in sveža.</opom6_3>
+    <ou1_3 et="6532" date="2010-07-08T10:22:31.088">5</ou1_3>
+    <opom7_3 et="6532" date="2010-07-08T10:22:31.088">Lepo urejeno in zloženo.</opom7_3>
+    <oi1_3 et="6532" date="2010-07-08T10:22:31.088">5</oi1_3>
+    <opom8_3 et="6532" date="2010-07-08T10:22:31.088">Vsi izdelki imajo ceno.</opom8_3>
+    <oi2_3 et="6532" date="2010-07-08T10:22:31.088">5</oi2_3>
+    <opom9_3 et="6532" date="2010-07-08T10:22:31.088">Pregledne - ob izdelkih.</opom9_3>
+    <ou3_3 et="6532" date="2010-07-08T10:22:31.088">5</ou3_3>
+    <opom10_3 et="15444" date="2010-07-08T10:24:19.213">Čisto - tudi steklene površine.</opom10_3>
+    <ou4_3 et="15444" date="2010-07-08T10:24:19.213">5</ou4_3>
+    <opom11_3 et="15444" date="2010-07-08T10:24:19.213">Zelo dobro založeno.</opom11_3>
+    <ou5_3 et="15444" date="2010-07-08T10:24:19.213">5</ou5_3>
+    <opom12_3 et="15444" date="2010-07-08T10:24:19.213">Zaradi preglednosti zelo privlačen.</opom12_3>
+    <komen3 et="15444" date="2010-07-08T10:24:19.213">Prodajalka je bila zelo prijazna , svoje delo dobro obvlada, je odločna in zna svetovati stranki.Lepo je bilo kupovati pri njej.</komen3>
+    <meso et="15444" date="2010-07-08T10:24:19.213">1</meso>
+    <Oxoo et="3686" date="2010-07-08T10:24:22.916">1</Oxoo>
+    <zp00_4 et="2797" date="2010-07-08T10:24:25.729">2</zp00_4>
+    <zp02_4 et="5192" date="2010-07-08T10:25:17.666">1</zp02_4>
+    <zp03_4 et="5192" date="2010-07-08T10:25:17.666">5</zp03_4>
+    <opom1_4 et="5192" date="2010-07-08T10:25:17.666">Izredno dobre volje.</opom1_4>
+    <zp03x_4 et="5192" date="2010-07-08T10:25:17.666">1</zp03x_4>
+    <zp04_4 et="5192" date="2010-07-08T10:25:17.666">1</zp04_4>
+    <zp05_4 et="5192" date="2010-07-08T10:25:17.666">1</zp05_4>
+    <zp06_4 et="5192" date="2010-07-08T10:25:17.666">5</zp06_4>
+    <opom2_4 et="5192" date="2010-07-08T10:25:17.666">Zelo prijazen.</opom2_4>
+    <zp07_4 et="5192" date="2010-07-08T10:25:17.666">5</zp07_4>
+    <zp_op7_4 et="5192" date="2010-07-08T10:25:17.666">Hitra odzivnost.</zp_op7_4>
+    <zp08_4 et="13951" date="2010-07-08T10:27:37.198">5</zp08_4>
+    <zp_op8_4 et="13951" date="2010-07-08T10:27:37.198">Delal je hitro in proščeno.</zp_op8_4>
+    <zu01_4 et="13951" date="2010-07-08T10:27:37.198">5</zu01_4>
+    <opom3_4 et="13951" date="2010-07-08T10:27:37.198">Glede na delo ,ki ga ima- čist in urejen.</opom3_4>
+    <zs01_4 et="13951" date="2010-07-08T10:27:37.198">5</zs01_4>
+    <opom4_4 et="13951" date="2010-07-08T10:27:37.198">Takoj je navedel pišč. in pur. prsa,sv.ribico in pusto gov.meso.Povedal je tudi katero je hitreje pripravljeno.</opom4_4>
+    <zs02_4 et="13951" date="2010-07-08T10:27:37.198">5</zs02_4>
+    <opom5_4 et="13951" date="2010-07-08T10:27:37.198">Priporočal je sv. ribico, ker se lahko naredi v različnih omakah.</opom5_4>
+    <zu02_4 et="13951" date="2010-07-08T10:27:37.198">1</zu02_4>
+    <zu03_4 et="13951" date="2010-07-08T10:27:37.198">1</zu03_4>
+    <zu05_4 et="7146" date="2010-07-08T10:28:48.666">5</zu05_4>
+    <opom6_4 et="7146" date="2010-07-08T10:28:48.666">Glede na delo-čista.</opom6_4>
+    <ou1_4 et="7146" date="2010-07-08T10:28:48.666">5</ou1_4>
+    <opom7_4 et="7146" date="2010-07-08T10:28:48.682">Zelo lepo urejeno.</opom7_4>
+    <oi1_4 et="7146" date="2010-07-08T10:28:48.682">5</oi1_4>
+    <opom8_4 et="7146" date="2010-07-08T10:28:48.682">Vsi artikli imajo ceno.</opom8_4>
+    <oi2_4 et="7146" date="2010-07-08T10:28:48.682">5</oi2_4>
+    <opom9_4 et="7146" date="2010-07-08T10:28:48.682">Vidne in pregledne.</opom9_4>
+    <ou3_4 et="7146" date="2010-07-08T10:28:48.682">5</ou3_4>
+    <opom10_4 et="7146" date="2010-07-08T10:28:48.682">Zelo čisto- tudi vitrine.</opom10_4>
+    <ou4_4 et="25864" date="2010-07-08T10:31:23.870">5</ou4_4>
+    <opom11_4 et="25864" date="2010-07-08T10:31:23.870">Lepo založeno -lepa izbira.</opom11_4>
+    <ou5_4 et="25864" date="2010-07-08T10:31:23.870">5</ou5_4>
+    <opom12_4 et="25864" date="2010-07-08T10:31:23.870">Oddelek mi je bil všeč, ker je čist- zelo privlačen.</opom12_4>
+    <komen4 et="25864" date="2010-07-08T10:31:23.870">Mesar je bil zelo prijazen , vzel si je čas zame, vse lepo razložil, tudi povedal , kako kakšno meso najboljše pripraviti.Lahko bi bil mariskomu za vzgled, kaj pomeni biti &quot;dober prodajalec&quot;!Izredno lepa izkušnja!</komen4>
+    <ribe et="25864" date="2010-07-08T10:31:23.870">2</ribe>
+    <bp01 et="6134" date="2010-07-08T10:32:25.229">1</bp01>
+    <bp02 et="6134" date="2010-07-08T10:32:25.229">1</bp02>
+    <bp03 et="6134" date="2010-07-08T10:32:25.229">5</bp03>
+    <bp_op1 et="6134" date="2010-07-08T10:32:25.229">Dobre volje.</bp_op1>
+    <bp04 et="6134" date="2010-07-08T10:32:25.229">1</bp04>
+    <bp05 et="6134" date="2010-07-08T10:32:25.229">5</bp05>
+    <bp_op2 et="6134" date="2010-07-08T10:32:25.229">Zelo prijazna in nasmejana.</bp_op2>
+    <bp07 et="6134" date="2010-07-08T10:32:25.229">5</bp07>
+    <bp_op7 et="6134" date="2010-07-08T10:32:25.229">Hitra in učinkovita.</bp_op7>
+    <bu00 et="6134" date="2010-07-08T10:32:25.229">5</bu00>
+    <bp_op3 et="4790" date="2010-07-08T10:33:13.151">Čista in urejena.</bp_op3>
+    <bu01 et="4790" date="2010-07-08T10:33:13.151">1</bu01>
+    <bm01 et="4790" date="2010-07-08T10:33:13.151">1</bm01>
+    <bm02 et="4790" date="2010-07-08T10:33:13.151">1</bm02>
+    <bm03 et="4790" date="2010-07-08T10:33:13.151">1</bm03>
+    <bm04 et="4790" date="2010-07-08T10:33:13.151">5</bm04>
+    <bm_op4 et="4790" date="2010-07-08T10:33:13.151">Da- ni bilo vrste.</bm_op4>
+    <bu03 et="4790" date="2010-07-08T10:33:13.151">5</bu03>
+    <kombu03 et="4790" date="2010-07-08T10:33:13.151">Čista in pospravljena.</kombu03>
+    <bp06 et="4790" date="2010-07-08T10:33:13.151">2</bp06>
+    <br01 et="2937" date="2010-07-08T10:33:16.088">1</br01>
+    <br02 et="17378" date="2010-07-08T10:34:25.620">1</br02>
+    <br03 et="17378" date="2010-07-08T10:34:25.620">1</br03>
+    <br04 et="17378" date="2010-07-08T10:34:25.620">1-2</br04>
+    <komen10 et="17378" date="2010-07-08T10:34:25.620">Bila je prijazna in nasmejana.Ponudila je vrečko, se zahvalila za nakup in mi zaželela lep dan.Po nakupu v tej trgovini je res bil!</komen10>
+  </Answers>
+  <Questions>
+    <Q VisitCount="1" Name="who" />
+    <Q VisitCount="1" Name="anketar" />
+    <Q VisitCount="0" Name="wholast" />
+    <Q VisitCount="0" Name="id" />
+    <Q VisitCount="1" Name="id2" />
+    <Q VisitCount="0" Name="drzava" />
+    <Q VisitCount="0" Name="tip" />
+    <Q VisitCount="1" Name="DD" />
+    <Q VisitCount="1" Name="MM" />
+    <Q VisitCount="1" Name="LL" />
+    <Q VisitCount="1" Name="ura1" />
+    <Q VisitCount="1" Name="minute1" />
+    <Q VisitCount="1" Name="meritev" />
+    <Q VisitCount="1" Name="meritev2" />
+    <Q VisitCount="1" Name="vredn" />
+    <Q VisitCount="1" Name="obiodd" />
+    <Q VisitCount="1" Name="tz01" />
+    <Q VisitCount="1" Name="tz_op1" />
+    <Q VisitCount="1" Name="tz02" />
+    <Q VisitCount="1" Name="tz_op2" />
+    <Q VisitCount="1" Name="tn01" />
+    <Q VisitCount="1" Name="tn_op1" />
+    <Q VisitCount="1" Name="tn02" />
+    <Q VisitCount="1" Name="tn_op2" />
+    <Q VisitCount="1" Name="tn03" />
+    <Q VisitCount="1" Name="tn_op3" />
+    <Q VisitCount="1" Name="tn05" />
+    <Q VisitCount="1" Name="tn_op5" />
+    <Q VisitCount="1" Name="tn06" />
+    <Q VisitCount="1" Name="tn_op6" />
+    <Q VisitCount="1" Name="tv01" />
+    <Q VisitCount="1" Name="tv_op1" />
+    <Q VisitCount="1" Name="tv02" />
+    <Q VisitCount="1" Name="tv_op2" />
+    <Q VisitCount="1" Name="tn04" />
+    <Q VisitCount="1" Name="tn_op4" />
+    <Q VisitCount="1" Name="koment" />
+    <Q VisitCount="1" Name="sz" />
+    <Q VisitCount="1" Name="zp00_1" />
+    <Q VisitCount="1" Name="zp01_1" />
+    <Q VisitCount="1" Name="zp02_1" />
+    <Q VisitCount="1" Name="zp03_1" />
+    <Q VisitCount="1" Name="opom1_1" />
+    <Q VisitCount="1" Name="zp03x_1" />
+    <Q VisitCount="1" Name="zp04_1" />
+    <Q VisitCount="1" Name="zp05_1" />
+    <Q VisitCount="1" Name="zp06_1" />
+    <Q VisitCount="1" Name="opom2_1" />
+    <Q VisitCount="1" Name="zp07_1" />
+    <Q VisitCount="1" Name="zp_op7" />
+    <Q VisitCount="1" Name="zp08_1" />
+    <Q VisitCount="1" Name="zp_op8" />
+    <Q VisitCount="1" Name="zu01_1" />
+    <Q VisitCount="1" Name="opom3_1" />
+    <Q VisitCount="1" Name="zs01_1" />
+    <Q VisitCount="1" Name="opom4_1" />
+    <Q VisitCount="1" Name="zs02_1" />
+    <Q VisitCount="1" Name="opom5_1" />
+    <Q VisitCount="1" Name="zr01" />
+    <Q VisitCount="1" Name="zr02" />
+    <Q VisitCount="1" Name="zr03" />
+    <Q VisitCount="1" Name="zr04" />
+    <Q VisitCount="1" Name="zr04_op" />
+    <Q VisitCount="1" Name="zu02_1" />
+    <Q VisitCount="1" Name="zu05_1" />
+    <Q VisitCount="1" Name="opom6_1" />
+    <Q VisitCount="1" Name="ou1_1" />
+    <Q VisitCount="1" Name="opom7_1" />
+    <Q VisitCount="1" Name="oi1_1" />
+    <Q VisitCount="1" Name="opom8_1" />
+    <Q VisitCount="1" Name="oi2_1" />
+    <Q VisitCount="1" Name="opom9_1" />
+    <Q VisitCount="1" Name="ou2_1" />
+    <Q VisitCount="1" Name="opom10_1" />
+    <Q VisitCount="1" Name="ou3_1" />
+    <Q VisitCount="1" Name="opom11_1" />
+    <Q VisitCount="1" Name="ou4_1" />
+    <Q VisitCount="1" Name="opom12_1" />
+    <Q VisitCount="1" Name="ou5_1" />
+    <Q VisitCount="1" Name="opom13_1" />
+    <Q VisitCount="1" Name="komen1" />
+    <Q VisitCount="1" Name="kpp" />
+    <Q VisitCount="1" Name="zp00_2" />
+    <Q VisitCount="1" Name="zp02_2" />
+    <Q VisitCount="1" Name="zp03_2" />
+    <Q VisitCount="1" Name="opom1_2" />
+    <Q VisitCount="1" Name="zp03x_2" />
+    <Q VisitCount="1" Name="zp04_2" />
+    <Q VisitCount="1" Name="zp05_2" />
+    <Q VisitCount="1" Name="zp06_2" />
+    <Q VisitCount="1" Name="opom2_2" />
+    <Q VisitCount="1" Name="zp07_2" />
+    <Q VisitCount="1" Name="zp_op7_2" />
+    <Q VisitCount="1" Name="zp08_2" />
+    <Q VisitCount="1" Name="zp_op8_2" />
+    <Q VisitCount="1" Name="zu01_2" />
+    <Q VisitCount="1" Name="opom3_2" />
+    <Q VisitCount="1" Name="zs01_2" />
+    <Q VisitCount="1" Name="opom4_2" />
+    <Q VisitCount="1" Name="zs02_2" />
+    <Q VisitCount="1" Name="opom5_2" />
+    <Q VisitCount="1" Name="zs03" />
+    <Q VisitCount="1" Name="zs03a" />
+    <Q VisitCount="1" Name="zs03b" />
+    <Q VisitCount="1" Name="zu02_2" />
+    <Q VisitCount="1" Name="zu03_2" />
+    <Q VisitCount="1" Name="zu04_2" />
+    <Q VisitCount="1" Name="zu05_2" />
+    <Q VisitCount="1" Name="opom6_2" />
+    <Q VisitCount="1" Name="ou1_2" />
+    <Q VisitCount="1" Name="opom7_2" />
+    <Q VisitCount="1" Name="oi1_2" />
+    <Q VisitCount="1" Name="opom8_2" />
+    <Q VisitCount="1" Name="oi2_2" />
+    <Q VisitCount="1" Name="opom9_2" />
+    <Q VisitCount="1" Name="ou3_2" />
+    <Q VisitCount="1" Name="opom10_2" />
+    <Q VisitCount="1" Name="ou4_2" />
+    <Q VisitCount="1" Name="opom11_2" />
+    <Q VisitCount="1" Name="ou5_2" />
+    <Q VisitCount="1" Name="opom12_2" />
+    <Q VisitCount="1" Name="komen2" />
+    <Q VisitCount="1" Name="delik" />
+    <Q VisitCount="1" Name="zp00_3" />
+    <Q VisitCount="1" Name="zp02_3" />
+    <Q VisitCount="1" Name="zp03_3" />
+    <Q VisitCount="1" Name="opom1_3" />
+    <Q VisitCount="1" Name="zp03x_3" />
+    <Q VisitCount="1" Name="zp04_3" />
+    <Q VisitCount="1" Name="zp05_3" />
+    <Q VisitCount="1" Name="zp06_3" />
+    <Q VisitCount="1" Name="opom2_3" />
+    <Q VisitCount="1" Name="zp07_3" />
+    <Q VisitCount="1" Name="zp_op7_3" />
+    <Q VisitCount="1" Name="zp08_3" />
+    <Q VisitCount="1" Name="zp_op8_3" />
+    <Q VisitCount="1" Name="zu01_3" />
+    <Q VisitCount="1" Name="opom3_3" />
+    <Q VisitCount="1" Name="zs01_3" />
+    <Q VisitCount="1" Name="opom4_3" />
+    <Q VisitCount="1" Name="zs02_3" />
+    <Q VisitCount="1" Name="opom5_3" />
+    <Q VisitCount="1" Name="zu02_3" />
+    <Q VisitCount="1" Name="zu03_3" />
+    <Q VisitCount="1" Name="zu04_3" />
+    <Q VisitCount="1" Name="zu05_3" />
+    <Q VisitCount="1" Name="opom6_3" />
+    <Q VisitCount="1" Name="ou1_3" />
+    <Q VisitCount="1" Name="opom7_3" />
+    <Q VisitCount="1" Name="oi1_3" />
+    <Q VisitCount="1" Name="opom8_3" />
+    <Q VisitCount="1" Name="oi2_3" />
+    <Q VisitCount="1" Name="opom9_3" />
+    <Q VisitCount="1" Name="ou3_3" />
+    <Q VisitCount="1" Name="opom10_3" />
+    <Q VisitCount="1" Name="ou4_3" />
+    <Q VisitCount="1" Name="opom11_3" />
+    <Q VisitCount="1" Name="ou5_3" />
+    <Q VisitCount="1" Name="opom12_3" />
+    <Q VisitCount="1" Name="komen3" />
+    <Q VisitCount="1" Name="meso" />
+    <Q VisitCount="1" Name="Oxoo" />
+    <Q VisitCount="1" Name="zp00_4" />
+    <Q VisitCount="1" Name="zp02_4" />
+    <Q VisitCount="1" Name="zp03_4" />
+    <Q VisitCount="1" Name="opom1_4" />
+    <Q VisitCount="1" Name="zp03x_4" />
+    <Q VisitCount="1" Name="zp04_4" />
+    <Q VisitCount="1" Name="zp05_4" />
+    <Q VisitCount="1" Name="zp06_4" />
+    <Q VisitCount="1" Name="opom2_4" />
+    <Q VisitCount="1" Name="zp07_4" />
+    <Q VisitCount="1" Name="zp_op7_4" />
+    <Q VisitCount="1" Name="zp08_4" />
+    <Q VisitCount="1" Name="zp_op8_4" />
+    <Q VisitCount="1" Name="zu01_4" />
+    <Q VisitCount="1" Name="opom3_4" />
+    <Q VisitCount="1" Name="zs01_4" />
+    <Q VisitCount="1" Name="opom4_4" />
+    <Q VisitCount="1" Name="zs02_4" />
+    <Q VisitCount="1" Name="opom5_4" />
+    <Q VisitCount="1" Name="zu02_4" />
+    <Q VisitCount="1" Name="zu03_4" />
+    <Q VisitCount="1" Name="zu05_4" />
+    <Q VisitCount="1" Name="opom6_4" />
+    <Q VisitCount="1" Name="ou1_4" />
+    <Q VisitCount="1" Name="opom7_4" />
+    <Q VisitCount="1" Name="oi1_4" />
+    <Q VisitCount="1" Name="opom8_4" />
+    <Q VisitCount="1" Name="oi2_4" />
+    <Q VisitCount="1" Name="opom9_4" />
+    <Q VisitCount="1" Name="ou3_4" />
+    <Q VisitCount="1" Name="opom10_4" />
+    <Q VisitCount="1" Name="ou4_4" />
+    <Q VisitCount="1" Name="opom11_4" />
+    <Q VisitCount="1" Name="ou5_4" />
+    <Q VisitCount="1" Name="opom12_4" />
+    <Q VisitCount="1" Name="komen4" />
+    <Q VisitCount="1" Name="ribe" />
+    <Q VisitCount="1" Name="bp01" />
+    <Q VisitCount="1" Name="bp02" />
+    <Q VisitCount="1" Name="bp03" />
+    <Q VisitCount="1" Name="bp_op1" />
+    <Q VisitCount="1" Name="bp04" />
+    <Q VisitCount="1" Name="bp05" />
+    <Q VisitCount="1" Name="bp_op2" />
+    <Q VisitCount="1" Name="bp07" />
+    <Q VisitCount="1" Name="bp_op7" />
+    <Q VisitCount="1" Name="bu00" />
+    <Q VisitCount="1" Name="bp_op3" />
+    <Q VisitCount="1" Name="bu01" />
+    <Q VisitCount="1" Name="bm01" />
+    <Q VisitCount="1" Name="bm02" />
+    <Q VisitCount="1" Name="bm03" />
+    <Q VisitCount="1" Name="bm04" />
+    <Q VisitCount="1" Name="bm_op4" />
+    <Q VisitCount="1" Name="bu03" />
+    <Q VisitCount="1" Name="kombu03" />
+    <Q VisitCount="1" Name="bp06" />
+    <Q VisitCount="1" Name="br01" />
+    <Q VisitCount="1" Name="br02" />
+    <Q VisitCount="1" Name="br03" />
+    <Q VisitCount="1" Name="br04" />
+    <Q VisitCount="1" Name="komen10" />
+  </Questions>
+  <History>
+    <Page Page="3CE538F04AEB04ABF0A6A29F38714995">who</Page>
+    <Page Page="C8FA6EE74D957946997505B610F63039">anketar;id2</Page>
+    <Page Page="4E0884B74DFD50925FB1C1B09EC355E7">DD;MM;LL;ura1;minute1;meritev;meritev2;vredn;obiodd</Page>
+    <Page Page="7750DCCF47B33EC9598192BCCC984CED">tz01;tz_op1;tz02;tz_op2;tn01;tn_op1;tn02;tn_op2;tn03;tn_op3</Page>
+    <Page Page="62E980B4490F92735A848AA2FA0E4657">tn05;tn_op5;tn06;tn_op6;tv01;tv_op1;tv02;tv_op2;tn04;tn_op4</Page>
+    <Page Page="A37996764A6A1EEEF2C459991000329F">koment;sz</Page>
+    <Page Page="556AD4B749E05AE551162F86FB0868B5">zp00_1;zp01_1;zp02_1;zp03_1;opom1_1;zp03x_1;zp04_1;zp05_1;zp06_1;opom2_1</Page>
+    <Page Page="406AF774495774665F0ABF9B090350B6">zp07_1;zp_op7;zp08_1;zp_op8;zu01_1;opom3_1;zs01_1;opom4_1;zs02_1;opom5_1</Page>
+    <Page Page="D5A5E82941F685F61445739DFA69B8BB">zr01;zr02;zr03;zr04</Page>
+    <Page Page="E46BB9A2492CE790D67BB98895C38C0B">zr04_op;zu02_1;zu05_1;opom6_1;ou1_1;opom7_1;oi1_1;opom8_1;oi2_1;opom9_1</Page>
+    <Page Page="BDCBDF2641589E735ECAE4AF28C1AF24">ou2_1;opom10_1;ou3_1;opom11_1;ou4_1;opom12_1;ou5_1;opom13_1;komen1;kpp</Page>
+    <Page Page="0AC2EB2542B7114FE4140D9B02501C41">zp00_2</Page>
+    <Page Page="2EF9E57A487C37C982B58B9761213A0B">zp02_2;zp03_2;opom1_2;zp03x_2;zp04_2;zp05_2;zp06_2;opom2_2;zp07_2;zp_op7_2</Page>
+    <Page Page="44DAF5E949885E2135C170BC4AA8464A">zp08_2;zp_op8_2;zu01_2;opom3_2;zs01_2;opom4_2;zs02_2;opom5_2;zs03;zs03a</Page>
+    <Page Page="D52DC20B41B9F56704EE43A13F9C078F">zs03b;zu02_2;zu03_2;zu04_2;zu05_2;opom6_2;ou1_2;opom7_2;oi1_2;opom8_2</Page>
+    <Page Page="BA131ECE49488E25F0E13899D30ECA38">oi2_2;opom9_2;ou3_2;opom10_2;ou4_2;opom11_2;ou5_2;opom12_2;komen2;delik</Page>
+    <Page Page="6BB9F0374656054EBDD8ECAA3C82FFC2">zp00_3</Page>
+    <Page Page="77EE3E0B4790A9DD639647992AF434B5">zp02_3;zp03_3;opom1_3;zp03x_3;zp04_3;zp05_3;zp06_3;opom2_3;zp07_3;zp_op7_3</Page>
+    <Page Page="806263B948258D8F5DE2D2A73E766756">zp08_3;zp_op8_3;zu01_3;opom3_3;zs01_3;opom4_3;zs02_3;opom5_3;zu02_3;zu03_3</Page>
+    <Page Page="984B01F243E2F97F67B9CCB45A520F1E">zu04_3;zu05_3;opom6_3;ou1_3;opom7_3;oi1_3;opom8_3;oi2_3;opom9_3;ou3_3</Page>
+    <Page Page="5994DE2146EDA59A3BFC0BAF2FCF845C">opom10_3;ou4_3;opom11_3;ou5_3;opom12_3;komen3;meso</Page>
+    <Page Page="B193633543B860E06A8770B855FBD75B">Oxoo</Page>
+    <Page Page="CFC680BA4E89A8945281E2939210FA10">zp00_4</Page>
+    <Page Page="36C225F1477A50C33C13B897E94C021A">zp02_4;zp03_4;opom1_4;zp03x_4;zp04_4;zp05_4;zp06_4;opom2_4;zp07_4;zp_op7_4</Page>
+    <Page Page="185C94E64F0147F3BFC34FB67D8B01BF">zp08_4;zp_op8_4;zu01_4;opom3_4;zs01_4;opom4_4;zs02_4;opom5_4;zu02_4;zu03_4</Page>
+    <Page Page="75BF5D32411F1E6213794182F285AC19">zu05_4;opom6_4;ou1_4;opom7_4;oi1_4;opom8_4;oi2_4;opom9_4;ou3_4;opom10_4</Page>
+    <Page Page="671CB2DD440FA9FBD39BDB942F1080D4">ou4_4;opom11_4;ou5_4;opom12_4;komen4;ribe</Page>
+    <Page Page="F8434869444F48572739829757CAAB9C">bp01;bp02;bp03;bp_op1;bp04;bp05;bp_op2;bp07;bp_op7;bu00</Page>
+    <Page Page="CFC2B0A74E6E7DF5A72806AC95DE0159">bp_op3;bu01;bm01;bm02;bm03;bm04;bm_op4;bu03;kombu03;bp06</Page>
+    <Page Page="F7BDF1AC446ABAA05BCF71A038ECE0AC">br01</Page>
+    <Page Page="F61A06074FD217DE42D901B47FB8E9C7">br02;br03;br04;komen10</Page>
+  </History>
+</CaseData>
