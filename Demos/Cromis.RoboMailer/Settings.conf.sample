@@ -1,0 +1,14 @@
+<Settings>
+  <MailSettings>
+    <HTMLFile>Data\mail.html</HTMLFile>
+    <PaintTextFile>Data\mail.txt</PaintTextFile>
+    <Subject>Cover Letters for Administration Executive Assistant Jobs</Subject>
+    <From>ABC Company &lt;santos@email.com&gt;</From>
+    <TargetListFile>Data\MailList.txt</TargetListFile>
+  </MailSettings>
+  <OtherSettings>
+    <ContentEncoding>utf-8</ContentEncoding>
+    <MailAttachments>Data\files.txt</MailAttachments>
+    <MailImages>Data\images.txt</MailImages>
+  </OtherSettings>
+</Settings>
