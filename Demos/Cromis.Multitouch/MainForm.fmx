@@ -1,0 +1,72 @@
+object fMain: TfMain
+  Left = 0
+  Top = 0
+  Caption = 'MultiTouch'
+  ClientHeight = 567
+  ClientWidth = 384
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [dkDesktop]
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  DesignerMobile = True
+  DesignerWidth = 384
+  DesignerHeight = 592
+  DesignerDeviceName = 'Google Nexus 4'
+  DesignerOrientation = 0
+  DesignerOSVersion = ''
+  object PaintBox: TPaintBox
+    Align = alClient
+    Height = 518.000000000000000000
+    Width = 384.000000000000000000
+    OnPaint = PaintBoxPaint
+    object lbTouchUp: TLabel
+      EnableDragHighlight = False
+      Font.Size = 9.000000000000000000
+      StyledSettings = [ssFamily, ssStyle, ssFontColor]
+      Height = 23.000000000000000000
+      Position.X = 8.000000000000000000
+      Position.Y = 8.000000000000000000
+      Text = 'lbTouchUp'
+      Width = 361.000000000000000000
+      Trimming = ttCharacter
+    end
+    object lbTouchMove: TLabel
+      Font.Size = 9.000000000000000000
+      StyledSettings = [ssFamily, ssStyle, ssFontColor]
+      Height = 23.000000000000000000
+      Position.X = 8.000000000000000000
+      Position.Y = 24.000000000000000000
+      Text = 'lbTouchMove'
+      Width = 369.000000000000000000
+      Trimming = ttCharacter
+    end
+    object lbTouchDown: TLabel
+      Font.Size = 9.000000000000000000
+      StyledSettings = [ssFamily, ssStyle, ssFontColor]
+      Height = 23.000000000000000000
+      Position.X = 8.000000000000000000
+      Position.Y = 40.000000000000000000
+      Text = 'lbTouchDown'
+      Width = 361.000000000000000000
+      Trimming = ttCharacter
+    end
+  end
+  object pnTopBar: TPanel
+    Align = alMostTop
+    Height = 49.000000000000000000
+    Width = 384.000000000000000000
+    TabOrder = 1
+    object btnClear: TButton
+      Height = 44.000000000000000000
+      Position.X = 8.000000000000000000
+      Position.Y = 4.000000000000000000
+      TabOrder = 0
+      Text = 'Clear'
+      Trimming = ttCharacter
+      Width = 73.000000000000000000
+      OnClick = btnClearClick
+    end
+  end
+end
