@@ -141,10 +141,14 @@ end; { TSAllocateHWnd }
 //  @author  gabr [based on http://fidoforum.ru/pages/new46s35o217746.ru.delphi and
 //                 TIcsWndHandler.AllocateHWnd from ICS v6 (http://www.overbyte.be)]
 //  @since   2007-05-30
+// Update from DSiWin32 1.105a: 2019-05-06
+// - DSiDeallocateHWnd prevents WndProc from being called after the window was destroyed.
 procedure TSDeallocateHWnd(wnd: HWND);
 begin
   if wnd = 0 then
     Exit;
+  SetWindowLong(wnd, GWL_METHODDATA, 0);
+  SetWindowLong(wnd, GWL_METHODCODE, 0);
   DestroyWindow(wnd);
   EnterCriticalSection(GTSWndHandlerCritSect);
   try
