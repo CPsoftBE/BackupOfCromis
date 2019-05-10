@@ -778,6 +778,9 @@ destructor TTask.Destroy;
 begin
   FWorkerThread.Terminate;
   FWorkerThread.SignalAbort;
+  // Leak Fix Limagito
+  If FWaitForEvent <> 0 Then
+    CloseHandle(FWaitForEvent);
 
   inherited;
 end;
