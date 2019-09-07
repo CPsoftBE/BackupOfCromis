@@ -334,6 +334,9 @@ begin
     try
       // acquire new client context first
       Context := AcquireCommContext(FCommClientClass);
+      // acquire In & Out Stream
+      InStream := AcquireIPCData;
+      OutStream := AcquireIPCData;
       // we are connected already here
       DoOnClientConnect(Context);
       try
@@ -346,7 +349,6 @@ begin
             Exit;
 
           // read the request data first
-          InStream := AcquireIPCData;
 
           // check if the result is a valid response
           if not AResult and (GetLastError <> ERROR_MORE_DATA) then
@@ -404,7 +406,6 @@ begin
           end;
 
           // create result and call event
-          OutStream := AcquireIPCData;
           try
             if FFilters.Count > 0 then
               UsedFilters := InStream.Data.ApplyOutputFilters(FFilters)
@@ -414,8 +415,13 @@ begin
             // call the OnExecuteRequest callback handler
             FOnExecuteRequest(Context, InStream, OutStream);
 
-            if (UsedFilters <> nil) and (UsedFilters.FilterList.Count > 0) then
-              OutStream.Data.ApplyInputFilters(UsedFilters.FilterList);
+            if UsedFilters <> nil then
+            begin
+              if UsedFilters.FilterList.Count > 0 then
+                OutStream.Data.ApplyInputFilters(UsedFilters.FilterList);
+              // Interfaced Object, Auto Destroy
+              UsedFilters := Nil;
+            end;
           finally
             OutStream.Data.Storage.Position := 0;
           end;
@@ -461,6 +467,9 @@ begin
               BytesRead := OutStream.Data.Storage.Read(DataBuffer[0], cBufferSize);
             end;
           end;
+          // Clear In & Out Stream
+          InStream.Clear;
+          OutStream.Clear;
         until IDLength = -1;
       finally
         FlushFileBuffers(PipeHandle);

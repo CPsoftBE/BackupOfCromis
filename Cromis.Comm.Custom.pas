@@ -57,6 +57,7 @@ type
     procedure SetID(const Value: ustring);
     property Data: TStreamStorage read GetData;
     property ID: ustring read GetID write SetID;
+    procedure Clear;
   end;
 
   TMessageData = class(TInterfacedObject, IMessageData)
@@ -71,6 +72,7 @@ type
     destructor Destroy; override;
     property Data: TStreamStorage read GetData;
     property ID: ustring read GetID write SetID;
+    procedure Clear;
   end;
 
   {
@@ -311,6 +313,12 @@ begin
   FreeAndNil(FData);
 
   inherited;
+end;
+
+procedure TMessageData.Clear;
+begin
+  FID := '';
+  FData.Clear;
 end;
 
 function TMessageData.GetData: TStreamStorage;
