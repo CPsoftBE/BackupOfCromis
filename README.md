@@ -12,3 +12,5 @@ Cromis.IPC: Fast IPC client server communication based on named pipes. Very ligh
 Cromis.IMC: Fast IMC client server communication based on Indy TCP. Very lightweight.
 
 Cromis.DirectoryWatch: Directory watch class, that can monitor the selected directory included with sub-directories.
+
+Note: Please also check The Limagito-patches branch
