@@ -73,8 +73,10 @@ uses
    Windows, SysUtils, Classes, Messages, SyncObjs, DateUtils,
    {$IFNDEF UNICODE}WideStrUtils,{$ENDIF}
 
+   // DSiWin32
+   DSiWin32,
    // cromis units
-   Cromis.Utils, Cromis.Unicode,
+   Cromis.Unicode,
 {$IF CompilerVersion >= 20}
   Cromis.Threading.TS.Generics
 {$ELSE}
@@ -449,7 +451,7 @@ begin
   begin
     case FSignalType of
       stThreaded: FNotifyThread := TNotifyThread.Create(Notify);
-      stMessages: FWndHandle := TSAllocateHWnd(WatchWndProc);
+      stMessages: FWndHandle := DsiAllocateHWnd(WatchWndProc);
     end;
 
     FWatchThread := TDirWatchThread.Create(Directory,
@@ -499,7 +501,7 @@ begin
     end
     else if FSignalType = stMessages then
     begin
-      TSDeallocateHWnd(FWndHandle);
+      DsiDeallocateHWnd(FWndHandle);
       FWndHandle := 0;
     end;
   end;

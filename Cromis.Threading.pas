@@ -102,8 +102,10 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Contnrs, Variants,
 
+  // DSiWin32
+  DSiWin32,
   // cromis units
-  Cromis.Threading.Sync, Cromis.ValueList, Cromis.Utils,
+  Cromis.Threading.Sync, Cromis.ValueList,
 {$IF CompilerVersion >= 20}
   Cromis.Threading.TS.Generics
 {$ELSE}
@@ -396,7 +398,7 @@ end;
 
 constructor TTaskPool.Create(const MinPoolSize: Integer);
 begin
-  FWndHandle := TSAllocateHWnd(WatchWndProc);
+  FWndHandle := DsiAllocateHWnd(WatchWndProc);
   FFreeTaskList := TFreeTaskList.Create;
   FAllTaskList := TAllTaskList.Create;
 
@@ -413,7 +415,7 @@ begin
     Finalize;
 
   // dealocate window handle
-  TSDeallocateHWnd(FWndHandle);
+  DsiDeallocateHWnd(FWndHandle);
 
   inherited;
 end;
