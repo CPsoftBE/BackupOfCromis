@@ -341,6 +341,9 @@ begin
       DoOnClientConnect(Context);
       try
         repeat
+          if Not FListening then
+            Exit;
+
           // first read the ID size of the IPC
           AResult := ReadFile(PipeHandle, IDLength, SizeOf(Int64), BytesRead, nil);
 
@@ -470,7 +473,7 @@ begin
           // Clear In & Out Stream
           InStream.Clear;
           OutStream.Clear;
-        until IDLength = -1;
+        until (IDLength = -1);
       finally
         FlushFileBuffers(PipeHandle);
         DoOnClientDisconnect(Context);

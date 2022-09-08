@@ -1,283 +1,241 @@
 (*
- * This software is distributed under BSD license.
- *
- * Copyright (c) 2009 Iztok Kacin, Cromis (iztok.kacin@gmail.com).
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * - Redistributions of source code must retain the above copyright notice, this
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- * - Neither the name of the Iztok Kacin nor the names of its contributors may be
- *   used to endorse or promote products derived from this software without specific
- *   prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * NOTICE OF CODE ORIGIN
- *
- * This code was derived from the original code of author "Gleb Yourchenko"
- * The original code "FnugryDirWatch" can still be found at Torry Components
- * The URL is: http://www.torry.net/pages.php?id=252
- *
- * The code was taken as a starting point and then mainly written from scratch
- * keeping some of the healthy code parts. So I am not in any way an author of
- * the original idea. But I am the author of all the changes and new code parts.
- *
- * ============================================================================
- * 12/10/2009 (1.0.0)
- *  - Initial code rewrite from "FnugryDirWatch"
- * 16/01/2010 (1.0.1)
- *  - Refactored the main watch loop
- * 18/03/2011 (1.1.0)
- *  - 64 bit compiler compatible
- *  - Fixed thread termination bug
- * 12/06/2012 (1.2.0)
- *  - WaitForFileReady added. Waits until file is free to be used
- * 11/07/2012 (1.2.1)
- *  - Close the FChangeEvent handle
- * 21/07/2012 (1.3.0)
- *  - Added buffer size property, so that the user can control the size of buffer
- *  - Added OnError event handler, so user get notified of all errors
- *  - Check the result of ReadDirectoryChangesW with GetOverlappedResult.
- *    This way we can check if buffer overflow happens and trigger an error.
- * 15/03/2014 (1.4.0)
- *  - Added property SignalType
- *  - Implemented additional signaling method that run in the context of a worker
- *    thread. This way we can use the DirectoryWatch inside a secondary thread
- *    with no message loop.
- *  - Use unicode strings for all notifications
- * 15/05/2014 (1.4.1)
- *  - WaitForFileReady changed to function to indicate success or failure 
- * ============================================================================
+  * This software is distributed under BSD license.
+  *
+  * Copyright (c) 2009 Iztok Kacin, Cromis (iztok.kacin@gmail.com).
+  * All rights reserved.
+  *
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *
+  * - Redistributions of source code must retain the above copyright notice, this
+  *   list of conditions and the following disclaimer.
+  * - Redistributions in binary form must reproduce the above copyright notice, this
+  *   list of conditions and the following disclaimer in the documentation and/or
+  *   other materials provided with the distribution.
+  * - Neither the name of the Iztok Kacin nor the names of its contributors may be
+  *   used to endorse or promote products derived from this software without specific
+  *   prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+  * OF THE POSSIBILITY OF SUCH DAMAGE.
+  *
+  * NOTICE OF CODE ORIGIN
+  *
+  * This code was derived from the original code of author "Gleb Yourchenko"
+  * The original code "FnugryDirWatch" can still be found at Torry Components
+  * The URL is: http://www.torry.net/pages.php?id=252
+  *
+  * The code was taken as a starting point and then mainly written from scratch
+  * keeping some of the healthy code parts. So I am not in any way an author of
+  * the original idea. But I am the author of all the changes and new code parts.
+  *
+  * ============================================================================
+  * 12/10/2009 (1.0.0)
+  *  - Initial code rewrite from "FnugryDirWatch"
+  * 16/01/2010 (1.0.1)
+  *  - Refactored the main watch loop
+  * 18/03/2011 (1.1.0)
+  *  - 64 bit compiler compatible
+  *  - Fixed thread termination bug
+  * 12/06/2012 (1.2.0)
+  *  - WaitForFileReady added. Waits until file is free to be used
+  * 11/07/2012 (1.2.1)
+  *  - Close the FChangeEvent handle
+  * 21/07/2012 (1.3.0)
+  *  - Added buffer size property, so that the user can control the size of buffer
+  *  - Added OnError event handler, so user get notified of all errors
+  *  - Check the result of ReadDirectoryChangesW with GetOverlappedResult.
+  *    This way we can check if buffer overflow happens and trigger an error.
+  * 15/03/2014 (1.4.0)
+  *  - Added property SignalType
+  *  - Implemented additional signaling method that run in the context of a worker
+  *    thread. This way we can use the DirectoryWatch inside a secondary thread
+  *    with no message loop.
+  *  - Use unicode strings for all notifications
+  * 15/05/2014 (1.4.1)
+  *  - WaitForFileReady changed to function to indicate success or failure
+  * ============================================================================
 *)
 
-unit Cromis.DirectoryWatch;
+Unit Cromis.DirectoryWatch;
 
-interface
+Interface
 
-uses
-   Windows, SysUtils, Classes, Messages, SyncObjs, DateUtils,
-   {$IFNDEF UNICODE}WideStrUtils,{$ENDIF}
+Uses
+  Windows, SysUtils, Classes, Messages, SyncObjs, DateUtils,
+  // DSiWin32
+  DSiWin32,
+  // Cromis units
+  Cromis.Unicode, Cromis.Threading.TS.Generics;
 
-   // DSiWin32
-   DSiWin32,
-   // cromis units
-   Cromis.Unicode,
-{$IF CompilerVersion >= 20}
-  Cromis.Threading.TS.Generics
-{$ELSE}
-  Cromis.Threading.TS,
-  Cromis.AnyValue
-{$IFEND};
-
-const
-  FILE_NOTIFY_CHANGE_FILE_NAME   = $00000001;
-  FILE_NOTIFY_CHANGE_DIR_NAME    = $00000002;
-  FILE_NOTIFY_CHANGE_ATTRIBUTES  = $00000004;
-  FILE_NOTIFY_CHANGE_SIZE        = $00000008;
-  FILE_NOTIFY_CHANGE_LAST_WRITE  = $00000010;
+Const
+  FILE_NOTIFY_CHANGE_FILE_NAME = $00000001;
+  FILE_NOTIFY_CHANGE_DIR_NAME = $00000002;
+  FILE_NOTIFY_CHANGE_ATTRIBUTES = $00000004;
+  FILE_NOTIFY_CHANGE_SIZE = $00000008;
+  FILE_NOTIFY_CHANGE_LAST_WRITE = $00000010;
   FILE_NOTIFY_CHANGE_LAST_ACCESS = $00000020;
-  FILE_NOTIFY_CHANGE_CREATION    = $00000040;
-  FILE_NOTIFY_CHANGE_SECURITY    = $00000100;
+  FILE_NOTIFY_CHANGE_CREATION = $00000040;
+  FILE_NOTIFY_CHANGE_SECURITY = $00000100;
 
-const
+Const
   cShutdownTimeout = 3000;
   cFileWaitTimeout = 0;
-  
-type
-  // the filters that control when the watch is triggered
-  TWatchOption = (woFileName, woDirName, woAttributes, woSize, woLastWrite,
-                  woLastAccess, woCreation, woSecurity);
-  TWatchOptions = set of TWatchOption;
+  cErrorTypeNone = 0;
+  cErrorTypeStop = 1;
 
-  // notify procedure signature declaration
-  TNotifyProc = procedure(const Action: Integer; const FileName: ustring) of Object;
+Type
+  // the filters that control when the watch is triggered
+  TWatchOption = (woFileName, woDirName, woAttributes, woSize, woLastWrite, woLastAccess, woCreation, woSecurity);
+  TWatchOptions = Set Of TWatchOption;
 
   // the actions that are the result of the watch being triggered
   TWatchAction = (waAdded, waRemoved, waModified, waRenamedOld, waRenamedNew);
-  TWatchActions = set of TWatchAction;
-  TSignalType = (stMessages, stThreaded);
+  TWatchActions = Set Of TWatchAction;
 
-  TFileChangeNotifyEvent = procedure(const Sender: TObject;
-                                     const Action: TWatchAction;
-                                     const FileName: ustring
-                                     ) of Object;
-  TOnError = procedure(const Sender: TObject;
-                       const ErrorCode: Integer;
-                       const ErrorMessage: ustring
-                       ) of Object;
+  TFileChangeNotifyEvent = Procedure(Const Sender: TObject; Const Action: TWatchAction; Const FileName: ustring) Of Object;
+  TOnError = Procedure(Const Sender: TObject; Const ErrorCode: Integer; Const ErrorMessage: ustring) Of Object;
 
-  TDirectoryWatch = class
-  private
-    FWatchOptions : TWatchOptions;
-    FWatchActions : TWatchActions;
-    FWatchSubTree : Boolean;
-    FNotifyThread : TThread;
-    FWatchThread  : TThread;
-    FSignalType   : TSignalType;
-    FBufferSize   : Integer;
-    FWndHandle    : HWND;
-    FDirectory    : string;
-    FOnError      : TOnError;
-    FOnChange     : TNotifyEvent;
-    FOnNotify     : TFileChangeNotifyEvent;
-    procedure WatchWndProc(var Msg: TMessage);
-    procedure SetDirectory(const Value: string);
-    procedure SetWatchOptions(const Value: TWatchOptions);
-    procedure SetWatchActions(const Value: TWatchActions);
-    procedure SetWatchSubTree(const Value: Boolean);
-    function MakeFilter: Integer;
-    procedure SetSignalType(const Value: TSignalType);
-  protected
-    procedure Change; virtual;
-    procedure AllocWatchThread;
-    procedure ReleaseWatchThread;
-    procedure RestartWatchThread;
-    procedure Notify(const Action: Integer; const FileName: ustring); virtual;
-  public
-    constructor Create;
-    destructor Destroy; override;
-    procedure Start;
-    procedure Stop;
-    function Running: Boolean;
-    property WatchSubTree: Boolean read FWatchSubTree write SetWatchSubTree;
-    property WatchOptions: TWatchOptions read FWatchOptions write SetWatchOptions;
-    property WatchActions: TWatchActions read FWatchActions write SetWatchActions;
-    property SignalType: TSignalType read FSignalType write SetSignalType;
-    property BufferSize: Integer read FBufferSize write FBufferSize;
-    property Directory: string read FDirectory write SetDirectory;
+  TDirectoryWatch = Class
+  Private
+    FWatchOptions: TWatchOptions;
+    FWatchActions: TWatchActions;
+    FWatchSubTree: Boolean;
+    FWatchThread: TThread;
+    FBufferSize: Integer;
+    FWndHandle: HWND;
+    FDirectory: String;
+    FOnError: TOnError;
+    FOnChange: TNotifyEvent;
+    FOnNotify: TFileChangeNotifyEvent;
+    Procedure WatchWndProc(Var Msg: TMessage);
+    Procedure SetDirectory(Const Value: String);
+    Procedure SetWatchOptions(Const Value: TWatchOptions);
+    Procedure SetWatchActions(Const Value: TWatchActions);
+    Procedure SetWatchSubTree(Const Value: Boolean);
+    Function MakeFilter: Integer;
+  Protected
+    Procedure Change; Virtual;
+    Procedure AllocWatchThread;
+    Procedure ReleaseWatchThread;
+    Procedure RestartWatchThread;
+    Procedure Notify(Const Action: Integer; Const FileName: ustring); Virtual;
+  Public
+    Constructor Create;
+    Destructor Destroy; Override;
+    Procedure Start;
+    Procedure Stop;
+    Function Running: Boolean;
+    Property WatchSubTree: Boolean Read FWatchSubTree Write SetWatchSubTree;
+    Property WatchOptions: TWatchOptions Read FWatchOptions Write SetWatchOptions;
+    Property WatchActions: TWatchActions Read FWatchActions Write SetWatchActions;
+    Property BufferSize: Integer Read FBufferSize Write FBufferSize;
+    Property Directory: String Read FDirectory Write SetDirectory;
     // notification properties. Notify about internal and exernal changes
-    property OnNotify: TFileChangeNotifyEvent read FOnNotify write FOnNotify;
-    property OnChange: TNotifyEvent read FOnChange write FOnChange;
-    property OnError: TOnError read FOnError write FOnError;
-  end;
+    Property OnNotify: TFileChangeNotifyEvent Read FOnNotify Write FOnNotify;
+    Property OnChange: TNotifyEvent Read FOnChange Write FOnChange;
+    Property OnError: TOnError Read FOnError Write FOnError;
+  End;
 
   // waits for the file to be ready (it is not in use anymore) or timeout occurs
-  function WaitForFileReady(const FileName: string; const Timeout: Cardinal = cFileWaitTimeout): Boolean;
+Function WaitForFileReady(Const FileName: String; Const Timeout: Cardinal = cFileWaitTimeout): Boolean;
 
-implementation
+Implementation
 
-type
+Type
   PFILE_NOTIFY_INFORMATION = ^TFILE_NOTIFY_INFORMATION;
-  TFILE_NOTIFY_INFORMATION = record
-    NextEntryOffset : Cardinal;
-    Action          : Cardinal;
-    FileNameLength  : Cardinal;
-    FileName        : array[0..MAX_PATH - 1] of WideChar;
-  end;
 
-const
-  WM_DIRWATCH_ERROR    = WM_USER + 137;
-  WM_DIRWATCH_NOTIFY   = WM_USER + 138;
+  TFILE_NOTIFY_INFORMATION = Record
+    NextEntryOffset: Cardinal;
+    Action: Cardinal;
+    FileNameLength: Cardinal;
+    FileName: Array [0 .. MAX_PATH - 1] Of WideChar;
+  End;
 
-  FILE_LIST_DIRECTORY  = $0001;
+Const
+  WM_DIRWATCH_ERROR = WM_USER + 137;
+  WM_DIRWATCH_NOTIFY = WM_USER + 138;
 
-const
+  FILE_LIST_DIRECTORY = $0001;
+
+Const
   // error messages
   cErrorInWatchThread = 'Error "%s" in watch thread. Error code: %d';
   cErrorCreateWatchError = 'Error trying to create file handle for "%s". Error code: %d';
 
-type
+Type
   PNotifyRecord = ^TNotifyRecord;
-  TNotifyRecord = record
+
+  TNotifyRecord = Record
     Code: Integer;
     AMsg: puchar;
-  end;
+  End;
 
-  TNotifyThread = class(TThread)
-  private
-    FOnNotify    : TNotifyProc;
-    FAbortEvent  : THandle;
-    FNotifyEvent : THandle;
-    FNotifyQueue : TThreadSafeQueue{$IF CompilerVersion >= 20}<PNotifyRecord>{$IFEND};
-  protected
-    procedure Execute; override;
-  public
-    destructor Destroy; override;
-    constructor Create(const OnNotify: TNotifyProc);
-    procedure SignalNotify(const Value: PNotifyRecord);
-    procedure SignalAbort;
-    property NotifyQueue: TThreadSafeQueue{$IF CompilerVersion >= 20}<PNotifyRecord>{$IFEND} read FNotifyQueue;
-  end;
+  TDirWatchThread = Class(TThread)
+  Private
+    FWatchSubTree: Boolean;
+    FChangeEvent: THandle;
+    FAbortEvent: THandle;
+    FBufferSize: Integer;
+    FWndHandle: HWND;
+    FDirHandle: THandle;
+    FDirectory: String;
+    FIOResult: Pointer;
+    FFilter: Integer;
+    Procedure SignalError(Const ErrorMessage: ustring; ErrorCode: Cardinal = 0; ErrorType: LParam = 0);
+  Protected
+    Procedure Execute; Override;
+  Public
+    Constructor Create(Const Directory: String; Const WndHandle: HWND; Const BufferSize: Integer; Const TypeFilter: Cardinal; Const aWatchSubTree: Boolean);
+    Destructor Destroy; Override;
+    Procedure SignalAbort;
+  End;
 
-  TDirWatchThread = class(TThread)
-  private
-    FWatchSubTree : Boolean;
-    FNotifyThread : TThread;
-    FChangeEvent  : THandle;
-    FSignalType   : TSignalType;
-    FAbortEvent   : THandle;
-    FBufferSize   : Integer;
-    FWndHandle    : HWND;
-    FDirHandle    : THandle;
-    FDirectory    : string;
-    FIOResult     : Pointer;
-    FFilter       : Integer;
-    procedure SignalError(const ErrorMessage: ustring; ErrorCode: Cardinal = 0);
-  protected
-    procedure Execute; override;
-  public
-    constructor Create(const Directory: string;
-                       const WndHandle: HWND;
-                       const BufferSize: Integer;
-                       const TypeFilter: Cardinal;
-                       const aWatchSubTree: Boolean;
-                       const SignalType: TSignalType;
-                       const NotifyThread: TThread);
-    destructor Destroy; override;
-    procedure SignalAbort;
-  end;
-
-function WaitForFileReady(const FileName: string; const Timeout: Cardinal): Boolean;
-var
+Function WaitForFileReady(Const FileName: String; Const Timeout: Cardinal): Boolean;
+Var
   hFile: THandle;
   StartTime: TDateTime;
-begin
+Begin
   StartTime := Now;
   Result := False;
 
   // wait to close
-  while (MilliSecondsBetween(Now, StartTime) < Timeout) or (Timeout = 0) do
-  begin
-    hFile := CreateFile(PChar(FileName), GENERIC_READ, 0, nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  While (MilliSecondsBetween(Now, StartTime) < Timeout) Or (Timeout = 0) Do
+  Begin
+    hFile := CreateFile(PChar(FileName), GENERIC_READ, 0, Nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
-    if hFile <> INVALID_HANDLE_VALUE then
-    begin
+    If hFile <> INVALID_HANDLE_VALUE Then
+    Begin
       CloseHandle(hFile);
       Result := True;
       Break;
-    end;
+    End;
 
     // wait for file
     Sleep(50);
-  end;
-end;
+  End;
+End;
 
-procedure TDirWatchThread.Execute;
-var
+Procedure TDirWatchThread.Execute;
+Var
   NotifyData: PFILE_NOTIFY_INFORMATION;
-  Events: array [0..1] of THandle;
+  Events: Array [0 .. 1] Of THandle;
   NotifyRecord: PNotifyRecord;
-  ErrorMessage: string;
-  WaitResult: DWORD;
+  ErrorCode: Cardinal;
+  ErrorMessage: String;
+  WaitResult: DWORD; // DWORD is a 4-byte unsigned integer, type DWORD = Cardinal
   NextEntry: Cardinal;
   Overlap: TOverlapped;
   ResSize: Cardinal;
-begin
+Begin
   FillChar(Overlap, SizeOf(TOverlapped), 0);
   Overlap.hEvent := FChangeEvent;
 
@@ -285,86 +243,108 @@ begin
   Events[0] := FChangeEvent;
   Events[1] := FAbortEvent;
 
-  while not Terminated do
-  try
-    if ReadDirectoryChangesW(FDirHandle, FIOResult, FBufferSize, FWatchSubtree, FFilter, @ResSize, @Overlap, nil) then
-    begin
-      WaitResult := WaitForMultipleObjects(Length(Events), @Events, FALSE, INFINITE);
+  While Not Terminated Do
+    Try
+      If ReadDirectoryChangesW(FDirHandle, FIOResult, FBufferSize, FWatchSubTree, FFilter, @ResSize, @Overlap, Nil) Then
+      Begin
+        WaitResult := WaitForMultipleObjects(Length(Events), @Events, False, INFINITE);
 
-      // check if we have terminated the thread
-      if WaitResult <> WAIT_OBJECT_0 then
-      begin
-        Terminate;
-        Exit;
-      end;
+        // check if we have terminated the thread
+        If WaitResult <> WAIT_OBJECT_0 Then
+        Begin
+          Terminate;
+          Exit;
+        End;
 
-      if WaitResult = WAIT_OBJECT_0 then
-      begin
-        if GetOverlappedResult(FDirHandle, Overlap, ResSize, False) then
-        begin
-          NotifyData := FIOResult;
+        If WaitResult = WAIT_OBJECT_0 Then
+        Begin
+          If GetOverlappedResult(FDirHandle, Overlap, ResSize, False) Then
+          Begin
+            NotifyData := FIOResult;
 
-          // check overflow
-          if ResSize = 0 then
-          begin
-            ErrorMessage := SysErrorMessage(ERROR_NOTIFY_ENUM_DIR);
-            SignalError(ErrorMessage, ERROR_NOTIFY_ENUM_DIR);
-          end;
+            // check overflow
+            If ResSize = 0 Then
+            Begin
+              ErrorCode := ERROR_NOTIFY_ENUM_DIR;
+              ErrorMessage := SysErrorMessage(ERROR_NOTIFY_ENUM_DIR);
+              SignalError(ErrorMessage, ErrorCode, cErrorTypeNone);
+            End;
 
-          repeat
-            NextEntry := NotifyData^.NextEntryOffset;
+            Repeat
+              New(NotifyRecord);
+              NotifyRecord.Code := NotifyData^.Action;
+              // get memory for filename and fill it with data
+              GetMem(NotifyRecord.AMsg, NotifyData^.FileNameLength + SizeOf(WideChar));
+              Move(NotifyData^.FileName, Pointer(NotifyRecord.AMsg)^, NotifyData^.FileNameLength);
+              PWord(Cardinal(NotifyRecord.AMsg) + NotifyData^.FileNameLength)^ := 0;
+              // send the message about the filename information
+              PostMessage(FWndHandle, WM_DIRWATCH_NOTIFY, WParam(NotifyRecord), 0);
+              // advance to the next entry in the current buffer
+              NextEntry := NotifyData^.NextEntryOffset;
+              If NextEntry = 0 Then
+                Break
+              Else
+                PByte(NotifyData) := PByte(DWORD(NotifyData) + NextEntry);
+            Until Terminated;
+          End
+          Else
+          Begin
+            ErrorCode := GetLastError;
+            ErrorMessage := SysErrorMessage(ErrorCode);
+            SignalError('GetOverlappedResult: ' + ErrorMessage, ErrorCode, cErrorTypeNone);
+          End;
+        End;
+      End
+      Else
+      Begin
+        ErrorCode := GetLastError;
+        ErrorMessage := SysErrorMessage(ErrorCode);
+        SignalError('ReadDirectoryChanges: ' + ErrorMessage, ErrorCode, cErrorTypeStop);
+      End;
+    Except
+      On E: Exception Do
+      Begin
+        ErrorCode := GetLastError;
+        ErrorMessage := E.Message;
+        SignalError('Execute Exception: ' + ErrorMessage, ErrorCode, cErrorTypeStop);
+      End;
+    End;
+End;
 
-            New(NotifyRecord);
-            NotifyRecord.Code := NotifyData^.Action;
-            // get memory for filename and fill it with data
-            GetMem(NotifyRecord.AMsg, NotifyData^.FileNameLength + SizeOf(WideChar));
-            Move(NotifyData^.FileName, Pointer(NotifyRecord.AMsg)^, NotifyData^.FileNameLength);
-            PWord(Cardinal(NotifyRecord.AMsg) + NotifyData^.FileNameLength)^ := 0;
+(* Example Code form Madshi
+  procedure Proc2;
+  var pStrVar : TPString;
+  begin
+  // as you know already, "GetMem" does not initialize the memory
+  GetMem(pStrVar, sizeOf(string));
 
-            // send the message about the filename information
-            case FSignalType of
-              stMessages: PostMessage(FWndHandle, WM_DIRWATCH_NOTIFY, WParam(NotifyRecord), 0);
-              stThreaded: TNotifyThread(FNotifyThread).SignalNotify(NotifyRecord);
-            end;
+  // so if you're doing it yourself, you're out of danger
+  ZeroMemory(pStrVar, sizeOf(string));
 
-            // advance to the next entry in the current buffer
-            PByte(NotifyData) := PByte(DWORD(NotifyData) + NextEntry);
-          until (NextEntry = 0);
-        end
-        else
-        begin
-          ErrorMessage := SysErrorMessage(GetLastError);
-          SignalError(ErrorMessage);
-        end;
-      end;
-    end
-    else
-    begin
-      ErrorMessage := SysErrorMessage(GetLastError);
-      SignalError(ErrorMessage);
-    end;
-  except
-    on E :Exception do
-    begin
-      ErrorMessage := E.Message;
-      SignalError(ErrorMessage);
-    end;
+  // "pStrVar^" is initialized this time
+  // -> Delphi knows that "pStrVar^" holds no string currently
+  // -> Delphi assigns the new value to "pStrVar^" successfully
+  pStrVar^ := 'test';
+
+  // FreeMem frees the allocated memory, but the "test" string does NOT get freed
+  // this is at least a memory leak, sometimes it can even result in a crash
+  FreeMem(pStrVar);
   end;
-end;
+*)
 
-procedure TDirWatchThread.SignalAbort;
-begin
+Procedure TDirWatchThread.SignalAbort;
+Begin
   SetEvent(FAbortEvent);
-end;
+End;
 
-procedure TDirWatchThread.SignalError(const ErrorMessage: ustring; ErrorCode: Cardinal);
-var
+Procedure TDirWatchThread.SignalError(Const ErrorMessage: ustring; ErrorCode: Cardinal; ErrorType: LParam);
+Var
   MessageSize: Integer;
   NotifyRecord: PNotifyRecord;
-begin
+Begin
   New(NotifyRecord);
 
-  if ErrorCode = 0 then
+  If ErrorCode = 0 Then
     ErrorCode := GetLastError;
 
   // calculate the size of the error message buffer
@@ -372,26 +352,14 @@ begin
 
   NotifyRecord.Code := ErrorCode;
   GetMem(NotifyRecord.AMsg, MessageSize);
-{$IFNDEF UNICODE}
-  WStrPCopy(NotifyRecord.AMsg, ErrorMessage);
-{$ELSE}
   StrPCopy(NotifyRecord.AMsg, ErrorMessage);
-{$ENDIF}
 
-  case FSignalType of
-    stMessages: PostMessage(FWndHandle, WM_DIRWATCH_ERROR, WParam(NotifyRecord), 0);
-    stThreaded: TNotifyThread(FNotifyThread).SignalNotify(NotifyRecord);
-  end;
-end;
+  PostMessage(FWndHandle, WM_DIRWATCH_ERROR, WParam(NotifyRecord), LParam(ErrorType));
+End;
 
-constructor TDirWatchThread.Create(const Directory: string;
-                                   const WndHandle: HWND;
-                                   const BufferSize: Integer;
-                                   const TypeFilter: Cardinal;
-                                   const aWatchSubTree: Boolean;
-                                   const SignalType: TSignalType;
-                                   const NotifyThread: TThread);
-begin
+Constructor TDirWatchThread.Create(Const Directory: String; Const WndHandle: HWND; Const BufferSize: Integer; Const TypeFilter: Cardinal;
+  Const aWatchSubTree: Boolean);
+Begin
   //
   // Retrieve proc pointer, open directory to
   // watch and allocate buffer for notification data.
@@ -399,378 +367,256 @@ begin
   // create (that calls BeginThread) so any exception
   // will be still raised in caller's thread)
   //
-  FDirHandle := CreateFile(PChar(Directory),
-                           FILE_LIST_DIRECTORY,
-                           FILE_SHARE_READ OR
-                           FILE_SHARE_DELETE OR
-                           FILE_SHARE_WRITE,
-                           nil, OPEN_EXISTING,
-                           FILE_FLAG_BACKUP_SEMANTICS OR
-                           FILE_FLAG_OVERLAPPED,
-                           0);
+  FDirHandle := CreateFile(PChar(Directory), FILE_LIST_DIRECTORY, FILE_SHARE_READ OR FILE_SHARE_DELETE OR FILE_SHARE_WRITE, Nil, OPEN_EXISTING,
+    FILE_FLAG_BACKUP_SEMANTICS OR FILE_FLAG_OVERLAPPED, 0);
 
-  if FDirHandle = INVALID_HANDLE_VALUE then
-    raise Exception.CreateFmt(cErrorCreateWatchError, [Directory, GetLastError]);
+  If FDirHandle = INVALID_HANDLE_VALUE Then
+    Raise Exception.CreateFmt(cErrorCreateWatchError, [Directory, GetLastError]);
 
-  FChangeEvent := CreateEvent(nil, FALSE, FALSE, nil);
-  FAbortEvent := CreateEvent(nil, False, False, nil);
-  FSignalType := SignalType;
+  FChangeEvent := CreateEvent(Nil, False, False, Nil);
+  FAbortEvent := CreateEvent(Nil, False, False, Nil);
 
   // allocate the buffer memory
-  FBufferSize := BufferSize * SizeOf(TFILE_NOTIFY_INFORMATION);
+  FBufferSize := BufferSize * 1024; // SizeOf(TFILE_NOTIFY_INFORMATION); // CPsoft 2021.3.6.0
   GetMem(FIOResult, FBufferSize);
 
-  FWatchSubTree := aWatchSubtree;
-  FNotifyThread := NotifyThread;
+  FWatchSubTree := aWatchSubTree;
   FWndHandle := WndHandle;
   FDirectory := Directory;
   FFilter := TypeFilter;
 
-  inherited Create(False);
-end;
+  Inherited Create(False);
+End;
 
+Destructor TDirWatchThread.Destroy;
+Begin
+  DSiCloseHandleAndNull(FChangeEvent);
+  DSiCloseHandleAndNull(FAbortEvent);
 
-destructor TDirWatchThread.Destroy;
-begin
-   CloseHandle(FChangeEvent);
-   CloseHandle(FAbortEvent);
+  If FDirHandle <> INVALID_HANDLE_VALUE Then
+    CloseHandle(FDirHandle);
+  If Assigned(FIOResult) Then
+    FreeMem(FIOResult);
 
-   if FDirHandle <> INVALID_HANDLE_VALUE  then
-     CloseHandle(FDirHandle);
-   if Assigned(FIOResult) then
-     FreeMem(FIOResult);
-
-   inherited Destroy;
-end;
+  Inherited Destroy;
+End;
 
 { TFnugryDirWatch }
 
-procedure TDirectoryWatch.AllocWatchThread;
-begin
-  if FWatchThread = nil then
-  begin
-    case FSignalType of
-      stThreaded: FNotifyThread := TNotifyThread.Create(Notify);
-      stMessages: FWndHandle := DsiAllocateHWnd(WatchWndProc);
-    end;
+Procedure TDirectoryWatch.AllocWatchThread;
+Begin
+  If FWatchThread = Nil Then
+  Begin
+    FWndHandle := DsiAllocateHWnd(WatchWndProc);
 
-    FWatchThread := TDirWatchThread.Create(Directory,
-                                           FWndHandle,
-                                           FBufferSize,
-                                           MakeFilter,
-                                           WatchSubtree,
-                                           FSignalType,
-                                           FNotifyThread);
-  end;
-end;
+    FWatchThread := TDirWatchThread.Create(Directory, FWndHandle, FBufferSize, MakeFilter, WatchSubTree);
+  End;
+End;
 
-procedure TDirectoryWatch.ReleaseWatchThread;
-var
+Procedure TDirectoryWatch.ReleaseWatchThread;
+Var
   AResult: Cardinal;
   ThreadHandle: THandle;
-begin
-  if FWatchThread <> nil then
-  begin
+Begin
+  If FWatchThread <> Nil Then
+  Begin
     ThreadHandle := FWatchThread.Handle;
+
     TDirWatchThread(FWatchThread).SignalAbort;
 
     // wait and block until thread is finished
     AResult := WaitForSingleObject(ThreadHandle, cShutdownTimeout);
 
     // check if we timed out
-    if AResult = WAIT_TIMEOUT then
+    If AResult = WAIT_TIMEOUT Then
       TerminateThread(ThreadHandle, 0);
 
     // free the watch thread
     FreeAndNil(FWatchThread);
 
-    if FSignalType = stThreaded then
-    begin
-      // release the notify thread now
-      ThreadHandle := FNotifyThread.Handle;
-      TNotifyThread(FNotifyThread).SignalAbort;
+    DSiDeallocateHWnd(FWndHandle);
+    FWndHandle := 0;
+  End;
+End;
 
-      // wait and block until thread is finished
-      AResult := WaitForSingleObject(ThreadHandle, cShutdownTimeout);
-
-      // check if we timed out
-      if AResult = WAIT_TIMEOUT then
-        TerminateThread(ThreadHandle, 0);
-
-      FreeAndNil(FNotifyThread);
-    end
-    else if FSignalType = stMessages then
-    begin
-      DsiDeallocateHWnd(FWndHandle);
-      FWndHandle := 0;
-    end;
-  end;
-end;
-
-procedure TDirectoryWatch.RestartWatchThread;
-begin
+Procedure TDirectoryWatch.RestartWatchThread;
+Begin
   Stop;
   Start;
-end;
+End;
 
-function TDirectoryWatch.Running: Boolean;
-begin
-  Result := FWatchThread <> nil;
-end;
+Function TDirectoryWatch.Running: Boolean;
+Begin
+  Result := FWatchThread <> Nil;
+End;
 
-destructor TDirectoryWatch.Destroy;
-begin
+Destructor TDirectoryWatch.Destroy;
+Begin
   Stop;
 
-  inherited Destroy;
-end;
+  Inherited Destroy;
+End;
 
-constructor TDirectoryWatch.Create;
-begin
-  FSignalType := stMessages;
-  FWatchSubtree := True;
-  FBufferSize := 32;
+Constructor TDirectoryWatch.Create;
+Begin
+  FWatchSubTree := True;
+  FBufferSize := 64; // 32 - CPsoft 2021.3.6.0
 
   // construct the default watch actions and options
   FWatchActions := [waAdded, waRemoved, waModified, waRenamedOld, waRenamedNew];
-  FWatchOptions := [woFileName, woDirName, woAttributes, woSize, woLastWrite,
-                    woLastAccess, woCreation, woSecurity];
-end;
+  FWatchOptions := [woFileName, woDirName, woAttributes, woSize, woLastWrite, woLastAccess, woCreation, woSecurity];
+End;
 
-
-
-procedure TDirectoryWatch.SetWatchActions(const Value: TWatchActions);
-begin
-  if FWatchActions <> Value then
-  begin
+Procedure TDirectoryWatch.SetWatchActions(Const Value: TWatchActions);
+Begin
+  If FWatchActions <> Value Then
+  Begin
     FWatchActions := Value;
 
-    if Running then
+    If Running Then
       RestartWatchThread;
 
     Change;
-  end;
-end;
+  End;
+End;
 
-procedure TDirectoryWatch.SetWatchOptions(const Value: TWatchOptions);
-begin
-  if FWatchOptions <> Value then
-  begin
+Procedure TDirectoryWatch.SetWatchOptions(Const Value: TWatchOptions);
+Begin
+  If FWatchOptions <> Value Then
+  Begin
     FWatchOptions := Value;
 
-    if Running then
+    If Running Then
       RestartWatchThread;
 
     Change;
-  end;
-end;
+  End;
+End;
 
-procedure TDirectoryWatch.WatchWndProc(var Msg :TMessage);
-var
+Procedure TDirectoryWatch.WatchWndProc(Var Msg: TMessage);
+Var
   NotifyRecord: PNotifyRecord;
-begin
-   case Msg.msg of
-     WM_DIRWATCH_NOTIFY:
-     //
-     // Retrieve notify data and forward
-     // the event to TDirectoryWatch's notify
-     // handler. Free filename string (allocated
-     // in WatchThread's notify handler.)
-     //
-     begin
-       NotifyRecord := PNotifyRecord(Msg.wParam);
-       try
-         Notify(NotifyRecord.Code, NotifyRecord.AMsg);
-       finally
-         Dispose(NotifyRecord);
-       end;
-     end;
+Begin
+  Case Msg.Msg Of
+    WM_DIRWATCH_NOTIFY:
+      //
+      // Retrieve notify data and forward
+      // the event to TDirectoryWatch's notify
+      // handler. Free filename string (allocated
+      // in WatchThread's notify handler.)
+      //
+      Begin
+        NotifyRecord := PNotifyRecord(Msg.WParam);
+        Try
+          Notify(NotifyRecord.Code, NotifyRecord.AMsg);
+          // LeakFix CPsoft.be
+          FreeMem(NotifyRecord.AMsg);
+        Finally
+          Dispose(NotifyRecord);
+        End;
+      End;
 
-     WM_DIRWATCH_ERROR:
-     //
-     // Disable dir watch and re-raise
-     // exception on error
-     //
-     begin
-       NotifyRecord := PNotifyRecord(Msg.wParam);
-       try
-         if Assigned(FOnError) then
-           FOnError(Self, NotifyRecord.Code, NotifyRecord.AMsg);
-       finally
-         Dispose(NotifyRecord);
-       end;
-     end;
-     //
-     // pass all other messages down the line
-     //
-     else
-     begin
-       Msg.Result := DefWindowProc(FWndHandle, Msg.Msg, Msg.wParam, Msg.lParam);
-       Exit;
-     end;
-   end;
-end;
+    WM_DIRWATCH_ERROR:
+      //
+      // Disable dir watch and re-raise
+      // exception on error
+      //
+      Begin
+        NotifyRecord := PNotifyRecord(Msg.WParam);
+        Try
+          If Assigned(FOnError) Then
+            FOnError(Self, NotifyRecord.Code, NotifyRecord.AMsg);
+          // LeakFix CPsoft.be
+          FreeMem(NotifyRecord.AMsg);
+        Finally
+          Dispose(NotifyRecord);
+        End;
+        // Restart Watch Thread
+        If Msg.LParam = cErrorTypeStop Then
+          Stop;
+      End;
+    //
+    // pass all other messages down the line
+    //
+  Else
+    Begin
+      Msg.Result := DefWindowProc(FWndHandle, Msg.Msg, Msg.WParam, Msg.LParam);
+      Exit;
+    End;
+  End;
+End;
 
-function TDirectoryWatch.MakeFilter: Integer;
-const
-  FilterFlags: array [TWatchOption] of Integer = (FILE_NOTIFY_CHANGE_FILE_NAME,
-                                                  FILE_NOTIFY_CHANGE_DIR_NAME,
-                                                  FILE_NOTIFY_CHANGE_ATTRIBUTES,
-                                                  FILE_NOTIFY_CHANGE_SIZE,
-                                                  FILE_NOTIFY_CHANGE_LAST_WRITE,
-                                                  FILE_NOTIFY_CHANGE_LAST_ACCESS,
-                                                  FILE_NOTIFY_CHANGE_CREATION,
-                                                  FILE_NOTIFY_CHANGE_SECURITY);
-var
+Function TDirectoryWatch.MakeFilter: Integer;
+Const
+  FilterFlags: Array [TWatchOption] Of Integer = (FILE_NOTIFY_CHANGE_FILE_NAME, FILE_NOTIFY_CHANGE_DIR_NAME, FILE_NOTIFY_CHANGE_ATTRIBUTES,
+    FILE_NOTIFY_CHANGE_SIZE, FILE_NOTIFY_CHANGE_LAST_WRITE, FILE_NOTIFY_CHANGE_LAST_ACCESS, FILE_NOTIFY_CHANGE_CREATION, FILE_NOTIFY_CHANGE_SECURITY);
+Var
   Flag: TWatchOption;
-begin
+Begin
   Result := 0;
 
-  for Flag in FWatchOptions do
-    Result := Result or FilterFlags[Flag];
-end;
+  For Flag In FWatchOptions Do
+    Result := Result Or FilterFlags[Flag];
+End;
 
-procedure TDirectoryWatch.SetWatchSubTree(const Value :Boolean);
-begin
-  if Value <> FWatchSubtree then
-  begin
-    FWatchSubtree := Value;
+Procedure TDirectoryWatch.SetWatchSubTree(Const Value: Boolean);
+Begin
+  If Value <> FWatchSubTree Then
+  Begin
+    FWatchSubTree := Value;
 
-    if Running then
+    If Running Then
       RestartWatchThread;
 
     Change;
-  end;
-end;
+  End;
+End;
 
+Procedure TDirectoryWatch.Start;
+Begin
+  If FDirectory = '' Then
+    Exit;
 
-procedure TDirectoryWatch.Start;
-begin
-  if FDirectory = '' then
-    raise Exception.Create('Please specify a directory to watch');
-
-  if not Running then
-  begin
+  If Not Running Then
+  Begin
     AllocWatchThread;
     Change;
-  end;
-end;
+  End;
+End;
 
-procedure TDirectoryWatch.Stop;
-begin
-  if Running then
-  begin
+Procedure TDirectoryWatch.Stop;
+Begin
+  If Running Then
+  Begin
     ReleaseWatchThread;
     Change;
-  end;
-end;
+  End;
+End;
 
-procedure TDirectoryWatch.SetDirectory(const Value: string);
-begin
-  if StrIComp(PChar(Trim(Value)), PChar(FDirectory)) <> 0 then
-  begin
+Procedure TDirectoryWatch.SetDirectory(Const Value: String);
+Begin
+  If StrIComp(PChar(Trim(Value)), PChar(FDirectory)) <> 0 Then
+  Begin
     FDirectory := Trim(Value);
 
-    if Running then
+    If Running Then
       RestartWatchThread;
 
     Change;
-  end;
-end;
+  End;
+End;
 
-procedure TDirectoryWatch.SetSignalType(const Value: TSignalType);
-begin
-  if Running then
-    raise Exception.Create('You cannot change signal type while the directory watch is running');
-
-  FSignalType := Value;
-end;
-
-procedure TDirectoryWatch.Change;
-begin
-  if Assigned(FOnChange) then
+Procedure TDirectoryWatch.Change;
+Begin
+  If Assigned(FOnChange) Then
     FOnChange(Self);
-end;
+End;
 
-procedure TDirectoryWatch.Notify(const Action: Integer; const FileName: ustring);
-begin
-  if Assigned(FOnNotify) then
-    if TWatchAction(Action - 1) in FWatchActions then
+Procedure TDirectoryWatch.Notify(Const Action: Integer; Const FileName: ustring);
+Begin
+  If Assigned(FOnNotify) Then
+    If TWatchAction(Action - 1) In FWatchActions Then
       FOnNotify(Self, TWatchAction(Action - 1), FileName);
-end;
+End;
 
-{ TNotifyThread }
-
-constructor TNotifyThread.Create(const OnNotify: TNotifyProc);
-begin
-  FNotifyQueue := TThreadSafeQueue{$IF CompilerVersion >= 20}<PNotifyRecord>{$IFEND}.Create;
-  FNotifyEvent := CreateEvent(nil, False, False, nil);
-  FAbortEvent := CreateEvent(nil, False, False, nil);
-  FOnNotify := OnNotify;
-
-  inherited Create(False);
-end;
-
-destructor TNotifyThread.Destroy;
-begin
-  CloseHandle(FNotifyEvent);
-  CloseHandle(FAbortEvent);
-  FreeAndNil(FNotifyQueue);
-
-  inherited;
-end;
-
-procedure TNotifyThread.Execute;
-var
-  Events: array [0..1] of THandle;
-  WaitResult: Cardinal;
-{$IF CompilerVersion >= 20}
-  NotifyValue: PNotifyRecord;
-{$ELSE}
-  NotifyValue: TAnyValue;
-{$IFEND}
-begin
-  inherited;
-
-  // set the array of events
-  Events[0] := FNotifyEvent;
-  Events[1] := FAbortEvent;
-
-  while not Terminated do
-  begin
-    WaitResult := WaitForMultipleObjects(Length(Events), @Events, FALSE, INFINITE);
-
-    while FNotifyQueue.Dequeue(NotifyValue) do
-    begin
-    {$IF CompilerVersion >= 20}
-      FOnNotify(NotifyValue.Code, NotifyValue.AMsg);
-      FreeMem(NotifyValue);
-    {$ELSE}
-      FOnNotify(PNotifyRecord(NotifyValue.AsPointer).Code, PNotifyRecord(NotifyValue.AsPointer).AMsg);
-      FreeMem(PNotifyRecord(NotifyValue.AsPointer));
-    {$IFEND}
-    end;
-
-    // check if we have terminated the thread
-    if WaitResult <> WAIT_OBJECT_0 then
-    begin
-      Terminate;
-      Exit;
-    end;
-  end;
-end;
-
-procedure TNotifyThread.SignalAbort;
-begin
-  SetEvent(FAbortEvent);
-end;
-
-procedure TNotifyThread.SignalNotify(const Value: PNotifyRecord);
-begin
-  FNotifyQueue.Enqueue(Value);
-  SetEvent(FNotifyEvent);
-end;
-
-end.
-
-
+End.

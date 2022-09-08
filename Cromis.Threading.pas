@@ -1,105 +1,105 @@
 (*
- * This software is distributed under BSD license.
- *
- * Copyright (c) 2009-2014 Iztok Kacin, Cromis (iztok.kacin@gmail.com).
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * - Redistributions of source code must retain the above copyright notice, this
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- * - Neither the name of the Iztok Kacin nor the names of its contributors may be
- *   used to endorse or promote products derived from this software without specific
- *   prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * =============================================================================
- * Threading support. Thread Pool and threading support routines and classes
- * =============================================================================
- * 26/11/2010 (1.0.0)
- *   - Initial implementation of a Thread Pool.
- * 27/11/2010 (1.1.0)
- *   - Use direct notification calls from threads instead of messages
- *   - Changed names of some procedures
- * 28/11/2010 (1.2.0)
- *   - Change approach to task based. No need to define your own threads anymore
- *   - Use TStreamStorage as versatile data carrier between threads
- * 30/11/2010 (1.3.0)
- *   - Renamed ThreadPool to TaskPool
- *   - Added ITask as the main pool object
- *   - Implemented ITaskValues / ITaskValue as data carrier for more flexibility
- * 03/12/2010 (1.3.1)
- *   - Added DynamicSize property. Pool downsizes if larger than initial size
- *   - Only MinPoolSize is left (no MaxPoolSize). Can be set before initialize
- * 06/12/2010 (1.3.2)
- *   - Added Task Queue class
- * 07/12/2010 (1.3.3)
- *   - Simplified Task Queue and made it faster
- * 15/12/2010 (1.3.4)
- *   - Added "SendMessageAsync" as means of sending messages from tasks
- * 12/03/2010 (1.3.5)
- *   - WaitFor is only available in Delphi 2005 and up
- *   - Added AsBoolean and AsInterface types for ITaskValue
- *   - Added ITaskValues.Exists
- * 05/09/2010 (1.3.6)
- *   - Added WaitFor so tasks can be waited upon
- *   - Added Terminated flag for task
- * 18/10/2010 (1.3.7)
- *   - Added ShutdownTimeout (INFINITE by default)
- *   - Wait for all tasks to finish then shutting down the task pool
- * 28/12/2010 (1.4.0)
- *   - Added TLockFreeStack based on Windows SLISTS
- *   - Added TThreadSafeQueue based on linked lists
- * 27/05/2011 (1.4.1)
- *   - TThreadSafeQueue.AcquireNewItem does not need the lock
- * 09/06/2011 (1.4.2)
- *   - TTaskQueue is not only available as ITaskQueue interface
- * 01/07/2011 (1.4.3)
- *   - Added StopAllTasks for TTaskPool
- * 18/03/2012 (1.5.0)
- *   - 64 bit compiler compatible
- * 18/02/2013 (1.6.0)
- *   - Use new TAnyValue for internal data carrier
- *   - Rewriten TLockFreeStack
- *   - Task pool no uses TLockFreeStack for free tasks list
- * 11/12/2013 (1.7.0)
- *   - Added TSRWLock based on Windows APIs with fallback to critical section
- * 17/12/2013 (1.7.1)
- *   - Bind SLIST Windows APIs at runtime and raise exception if not available
- *   - TLockFreeStack and TThreadSafeQueue have new optional parameter UseDeleted
- * 06/01/2014 (1.7.2)
- *   - SpinLock and SpinLockArray added
- * 22/02/2014 (1.8.0)
- *   - Redesigned threading units by content and added generics implementations
- * 05/03/2014 (1.8.1)
- *   - Use thread safe AllocateHWnd / DeallocateHWnd
- * 02/06/2014 (1.9.0)
- *   - overloaded AcquireTask to allow for specific OnMessage handler per task
- * 04/06/2014 (1.9.1)
- *   - Added ExecInMainThread and ExecInMainThreadAndWait
- * 04/06/2014 (1.9.2)
- *   - Fixed a possible bug in TTaskPool Finalize
- * =============================================================================
+  * This software is distributed under BSD license.
+  *
+  * Copyright (c) 2009-2014 Iztok Kacin, Cromis (iztok.kacin@gmail.com).
+  * All rights reserved.
+  *
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *
+  * - Redistributions of source code must retain the above copyright notice, this
+  *   list of conditions and the following disclaimer.
+  * - Redistributions in binary form must reproduce the above copyright notice, this
+  *   list of conditions and the following disclaimer in the documentation and/or
+  *   other materials provided with the distribution.
+  * - Neither the name of the Iztok Kacin nor the names of its contributors may be
+  *   used to endorse or promote products derived from this software without specific
+  *   prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+  * OF THE POSSIBILITY OF SUCH DAMAGE.
+  *
+  * =============================================================================
+  * Threading support. Thread Pool and threading support routines and classes
+  * =============================================================================
+  * 26/11/2010 (1.0.0)
+  *   - Initial implementation of a Thread Pool.
+  * 27/11/2010 (1.1.0)
+  *   - Use direct notification calls from threads instead of messages
+  *   - Changed names of some procedures
+  * 28/11/2010 (1.2.0)
+  *   - Change approach to task based. No need to define your own threads anymore
+  *   - Use TStreamStorage as versatile data carrier between threads
+  * 30/11/2010 (1.3.0)
+  *   - Renamed ThreadPool to TaskPool
+  *   - Added ITask as the main pool object
+  *   - Implemented ITaskValues / ITaskValue as data carrier for more flexibility
+  * 03/12/2010 (1.3.1)
+  *   - Added DynamicSize property. Pool downsizes if larger than initial size
+  *   - Only MinPoolSize is left (no MaxPoolSize). Can be set before initialize
+  * 06/12/2010 (1.3.2)
+  *   - Added Task Queue class
+  * 07/12/2010 (1.3.3)
+  *   - Simplified Task Queue and made it faster
+  * 15/12/2010 (1.3.4)
+  *   - Added "SendMessageAsync" as means of sending messages from tasks
+  * 12/03/2010 (1.3.5)
+  *   - WaitFor is only available in Delphi 2005 and up
+  *   - Added AsBoolean and AsInterface types for ITaskValue
+  *   - Added ITaskValues.Exists
+  * 05/09/2010 (1.3.6)
+  *   - Added WaitFor so tasks can be waited upon
+  *   - Added Terminated flag for task
+  * 18/10/2010 (1.3.7)
+  *   - Added ShutdownTimeout (INFINITE by default)
+  *   - Wait for all tasks to finish then shutting down the task pool
+  * 28/12/2010 (1.4.0)
+  *   - Added TLockFreeStack based on Windows SLISTS
+  *   - Added TThreadSafeQueue based on linked lists
+  * 27/05/2011 (1.4.1)
+  *   - TThreadSafeQueue.AcquireNewItem does not need the lock
+  * 09/06/2011 (1.4.2)
+  *   - TTaskQueue is not only available as ITaskQueue interface
+  * 01/07/2011 (1.4.3)
+  *   - Added StopAllTasks for TTaskPool
+  * 18/03/2012 (1.5.0)
+  *   - 64 bit compiler compatible
+  * 18/02/2013 (1.6.0)
+  *   - Use new TAnyValue for internal data carrier
+  *   - Rewriten TLockFreeStack
+  *   - Task pool no uses TLockFreeStack for free tasks list
+  * 11/12/2013 (1.7.0)
+  *   - Added TSRWLock based on Windows APIs with fallback to critical section
+  * 17/12/2013 (1.7.1)
+  *   - Bind SLIST Windows APIs at runtime and raise exception if not available
+  *   - TLockFreeStack and TThreadSafeQueue have new optional parameter UseDeleted
+  * 06/01/2014 (1.7.2)
+  *   - SpinLock and SpinLockArray added
+  * 22/02/2014 (1.8.0)
+  *   - Redesigned threading units by content and added generics implementations
+  * 05/03/2014 (1.8.1)
+  *   - Use thread safe AllocateHWnd / DeallocateHWnd
+  * 02/06/2014 (1.9.0)
+  *   - overloaded AcquireTask to allow for specific OnMessage handler per task
+  * 04/06/2014 (1.9.1)
+  *   - Added ExecInMainThread and ExecInMainThreadAndWait
+  * 04/06/2014 (1.9.2)
+  *   - Fixed a possible bug in TTaskPool Finalize
+  * =============================================================================
 *)
-unit Cromis.Threading;
+Unit Cromis.Threading;
 
-interface
+Interface
 
-uses
+Uses
   Windows, Messages, SysUtils, Classes, Contnrs, Variants,
 
   // DSiWin32
@@ -113,34 +113,36 @@ uses
   Cromis.AnyValue
 {$IFEND};
 
-const
+Const
   cDefaultTimeout = 5000;
   cDefaultSize = 5000;
   cCSSpinCount = 4000;
 
-type
+Type
   PTaskQueueItem = ^TTaskQueueItem;
-  TTaskQueueItem = record
+
+  TTaskQueueItem = Record
     Next: PTaskQueueItem;
     Event: THandle;
-    {$IF CompilerVersion >= 17}
-      procedure WaitFor;
-    {$IFEND}
-  end;
+{$IF CompilerVersion >= 17}
+    Procedure WaitFor;
+{$IFEND}
+  End;
 
   PTaskHeadItem = ^TTaskHeadItem;
-  TTaskHeadItem = record
+
+  TTaskHeadItem = Record
     Last: PTaskQueueItem;
     First: PTaskQueueItem;
     Count: Integer;
-  end;
+  End;
 
   ITaskQueue = Interface(IInterface)
-  ['{D6DFBA09-968D-4634-BA1D-79AFD4A029BB}']
-    function EnqueueTask: PTaskQueueItem;
-    procedure DequeueTask;
-    function GetQueueSize: Integer;
-  end;
+    ['{D6DFBA09-968D-4634-BA1D-79AFD4A029BB}']
+    Function EnqueueTask: PTaskQueueItem;
+    Procedure DequeueTask;
+    Function GetQueueSize: Integer;
+  End;
 
   // task values interfaces
   ITaskValues = IValueList;
@@ -148,68 +150,68 @@ type
   ITask = Interface;
 
   ITaskMessage = Interface(IInterface)
-  ['{7E356929-C4BF-4352-84FD-472F87D50C3C}']
-    function GetName: string;
-    function GetValues: ITaskValues;
-    property Name: string read GetName;
-    property Values: ITaskValues read GetValues;
-  end;
+    ['{7E356929-C4BF-4352-84FD-472F87D50C3C}']
+    Function GetName: String;
+    Function GetValues: ITaskValues;
+    Property Name: String Read GetName;
+    Property Values: ITaskValues Read GetValues;
+  End;
 
-  TOnTaskMessage = procedure(const Msg: ITaskMessage) of Object;
-  TOnTaskEvent = procedure(const ATask: ITask) of Object;
+  TOnTaskMessage = Procedure(Const Msg: ITaskMessage) Of Object;
+  TOnTaskEvent = Procedure(Const ATask: ITask) Of Object;
 
   ITask = Interface(IInterface)
-  ['{3215E86F-ABC0-428C-9E5D-520BE08B0B50}']
-    function GetName: string;
-    function GetValues: ITaskValues;
-    function GetMessage: ITaskValues;
-    function GetTerminated: Boolean;
-    function GetTaskMethod: TOnTaskEvent;
-    function GetOnTaskMessage: TOnTaskMessage;
-    procedure SetName(const Value: string);
-    procedure SetTerminated(const Value: Boolean);
-    procedure SetTaskMethod(const Value: TOnTaskEvent);
-    procedure SetOnTaskMessage(const Value: TOnTaskMessage);
-    property OnTaskMessage: TOnTaskMessage read GetOnTaskMessage write SetOnTaskMessage;
-    property TaskMethod: TOnTaskEvent read GetTaskMethod write SetTaskMethod;
-    property Terminated: Boolean read GetTerminated write SetTerminated;
-    property Name: string read GetName write SetName;
-    property Message: ITaskValues read GetMessage;
-    property Values: ITaskValues read GetValues;
+    ['{3215E86F-ABC0-428C-9E5D-520BE08B0B50}']
+    Function GetName: String;
+    Function GetValues: ITaskValues;
+    Function GetMessage: ITaskValues;
+    Function GetTerminated: Boolean;
+    Function GetTaskMethod: TOnTaskEvent;
+    Function GetOnTaskMessage: TOnTaskMessage;
+    Procedure SetName(Const Value: String);
+    Procedure SetTerminated(Const Value: Boolean);
+    Procedure SetTaskMethod(Const Value: TOnTaskEvent);
+    Procedure SetOnTaskMessage(Const Value: TOnTaskMessage);
+    Property OnTaskMessage: TOnTaskMessage Read GetOnTaskMessage Write SetOnTaskMessage;
+    Property TaskMethod: TOnTaskEvent Read GetTaskMethod Write SetTaskMethod;
+    Property Terminated: Boolean Read GetTerminated Write SetTerminated;
+    Property Name: String Read GetName Write SetName;
+    Property Message: ITaskValues Read GetMessage;
+    Property Values: ITaskValues Read GetValues;
     // procedures of the ITask interface
-    procedure SendMessageSync(const Timeout: Integer = cDefaultTimeout);
-  {$IF CompilerVersion >= 20}
-    procedure ExecInMainThreadAndWait(const AThreadProc: TThreadProcedure);
-    procedure ExecInMainThread(const AThreadProc: TThreadProcedure);
-  {$IFEND}
-    procedure WaitFor(const Timeout: Cardinal = INFINITE);
-    procedure SendMessageAsync;
-    procedure SignalWaitFor;
-    procedure Terminate;
-    procedure Release;
-    procedure Run;
-  end;
+    Procedure SendMessageSync(Const Timeout: Integer = cDefaultTimeout);
+{$IF CompilerVersion >= 20}
+    Procedure ExecInMainThreadAndWait(Const AThreadProc: TThreadProcedure);
+    Procedure ExecInMainThread(Const AThreadProc: TThreadProcedure);
+{$IFEND}
+    Procedure WaitFor(Const Timeout: Cardinal = INFINITE);
+    Procedure SendMessageAsync;
+    Procedure SignalWaitFor;
+    Procedure Terminate;
+    Procedure Release;
+    Procedure Run;
+  End;
 
   IBaseTaskList = Interface(IInterface)
-  ['{942D599D-D651-452D-821A-37C1A11720E0}']
-    procedure Clear;
-    function GetCount: Int64;
-    function AcquireFirstTask: ITask;
-    procedure AddTask(const ATask: ITask);
-    property Count: Int64 read GetCount;
-  end;
+    ['{942D599D-D651-452D-821A-37C1A11720E0}']
+    Procedure Clear;
+    Function GetCount: Int64;
+    Function AcquireFirstTask: ITask;
+    Procedure AddTask(Const ATask: ITask);
+    Property Count: Int64 Read GetCount;
+  End;
 
   IFreeTaskList = Interface(IBaseTaskList)
-  ['{5A40BA9E-66F5-45CB-86A5-2C32C88053A7}']
-  end;
+    ['{5A40BA9E-66F5-45CB-86A5-2C32C88053A7}']
+  End;
 
   IAllTaskList = Interface(IBaseTaskList)
-  ['{460E7CF3-9467-4F4B-85C6-4D5EDDDA268E}']
-    procedure RemoveTask(const ATask: ITask);
-  end;
+    ['{460E7CF3-9467-4F4B-85C6-4D5EDDDA268E}']
+    Procedure RemoveTask(Const ATask: ITask);
+  End;
 
-  TTaskPool = class
-  strict private
+  TTaskPool = Class
+  Strict Private
     FRunning: Boolean;
     FWndHandle: HWND;
     FDynamicSize: Boolean;
@@ -218,114 +220,114 @@ type
     FFreeTaskList: IFreeTaskList;
     FOnTaskMessage: TOnTaskMessage;
     FShutdownTimeout: Cardinal;
-    function GetPoolSize: Integer;
-    function GetFreeTasks: Integer;
-    function AcquireFreeTask: ITask;
-    procedure WatchWndProc(var Msg: TMessage);
-    procedure OnTaskComplete(const ATask: ITask);
-  public
-    destructor Destroy; override;
-    constructor Create(const MinPoolSize: Integer);
-    function AcquireTask(const TaskMethod: TOnTaskEvent; const Name: string; const OnMessage: TOnTaskMessage): ITask; overload;
-    function AcquireTask(const TaskMethod: TOnTaskEvent; const Name: string): ITask; overload;
-    procedure Initialize;
-    procedure Finalize;
+    Function GetPoolSize: Integer;
+    Function GetFreeTasks: Integer;
+    Function AcquireFreeTask: ITask;
+    Procedure WatchWndProc(Var Msg: TMessage);
+    Procedure OnTaskComplete(Const ATask: ITask);
+  Public
+    Destructor Destroy; Override;
+    Constructor Create(Const MinPoolSize: Integer);
+    Function AcquireTask(Const TaskMethod: TOnTaskEvent; Const Name: String; Const OnMessage: TOnTaskMessage): ITask; Overload;
+    Function AcquireTask(Const TaskMethod: TOnTaskEvent; Const Name: String): ITask; Overload;
+    Procedure Initialize;
+    Procedure Finalize;
     // properties of the thread pool
-    property OnTaskMessage: TOnTaskMessage read FOnTaskMessage write FOnTaskMessage;
-    property ShutdownTimeout: Cardinal read FShutdownTimeout write FShutdownTimeout;
-    property DynamicSize: Boolean read FDynamicSize write FDynamicSize;
-    property MinPoolSize: Integer read FMinPoolSize write FMinPoolSize;
-    property FreeTasks: Integer read GetFreeTasks;
-    property PoolSize: Integer read GetPoolSize;
-    property Running: Boolean read FRunning;
-  end;
+    Property OnTaskMessage: TOnTaskMessage Read FOnTaskMessage Write FOnTaskMessage;
+    Property ShutdownTimeout: Cardinal Read FShutdownTimeout Write FShutdownTimeout;
+    Property DynamicSize: Boolean Read FDynamicSize Write FDynamicSize;
+    Property MinPoolSize: Integer Read FMinPoolSize Write FMinPoolSize;
+    Property FreeTasks: Integer Read GetFreeTasks;
+    Property PoolSize: Integer Read GetPoolSize;
+    Property Running: Boolean Read FRunning;
+  End;
 
   // acuire the task valus function
-  function AcquireTaskValues: ITaskValues;
-  function AcquireTaskQueue: ITaskQueue;
+Function AcquireTaskValues: ITaskValues;
+Function AcquireTaskQueue: ITaskQueue;
 
-implementation
+Implementation
 
-const
+Const
   WM_TASK_MESSAGE = WM_USER + 100;
 
-type
+Type
   PMethod = ^TMethod;
 
-  TTaskMessage = class(TInterfacedObject, ITaskMessage)
-  private
-    FName: string;
+  TTaskMessage = Class(TInterfacedObject, ITaskMessage)
+  Private
+    FName: String;
     FValues: ITaskValues;
-    function GetName: string;
-    function GetValues: ITaskValues;
-  public
-    constructor Create(const Name: string);
-    property Name: string read GetName;
-    property Values: ITaskValues read GetValues;
-  end;
+    Function GetName: String;
+    Function GetValues: ITaskValues;
+  Public
+    Constructor Create(Const Name: String);
+    Property Name: String Read GetName;
+    Property Values: ITaskValues Read GetValues;
+  End;
 
-  TWorkerThread = class(TThread)
-  private
+  TWorkerThread = Class(TThread)
+  Private
     FOwner: Pointer;
-    FEvents: array [0..1] of THandle;
+    FEvents: Array [0 .. 1] Of THandle;
     FOnTaskComplete: TOnTaskEvent;
-  protected
-    procedure Execute; override;
-  public
-    constructor Create(const Owner: ITask; const OnTaskComplete: TOnTaskEvent);
-    destructor Destroy; override;
-    procedure SignalAbort;
-    procedure SignalRun;
-  end;
+  Protected
+    Procedure Execute; Override;
+  Public
+    Constructor Create(Const Owner: ITask; Const OnTaskComplete: TOnTaskEvent);
+    Destructor Destroy; Override;
+    Procedure SignalAbort;
+    Procedure SignalRun;
+  End;
 
-  TMessageObj = class
-  private
+  TMessageObj = Class
+  Private
     FMessage: ITaskMessage;
-  public
-    constructor Create(const Msg: ITaskMessage);
-    property Msg: ITaskMessage read FMessage;
-  end;
+  Public
+    Constructor Create(Const Msg: ITaskMessage);
+    Property Msg: ITaskMessage Read FMessage;
+  End;
 
-  TFreeTaskList = class(TInterfacedObject, IFreeTaskList)
-  private
-  {$IFNDEF Threading_NoLockFreeStack}
-    {$IF CompilerVersion >= 20}
-      FInternalList: TLockFreeStack<ITask>;
-    {$ELSE}
-      FInternalList: TLockFreeStack;
-    {$IFEND}
-  {$ELSE}
+  TFreeTaskList = Class(TInterfacedObject, IFreeTaskList)
+  Private
+{$IFNDEF Threading_NoLockFreeStack}
+{$IF CompilerVersion >= 20}
+    FInternalList: TLockFreeStack<ITask>;
+{$ELSE}
+    FInternalList: TLockFreeStack;
+{$IFEND}
+{$ELSE}
     FInternalList: TInterfaceList;
     FCriticalSec: TRTLCriticalSection;
-  {$ENDIF}
-    function GetCount: Int64;
-  public
-    constructor Create;
-    destructor Destroy; override;
-    function AcquireFirstTask: ITask;
-    procedure Clear;
-    procedure AddTask(const ATask: ITask);
-    property Count: Int64 read GetCount;
-  end;
+{$ENDIF}
+    Function GetCount: Int64;
+  Public
+    Constructor Create;
+    Destructor Destroy; Override;
+    Function AcquireFirstTask: ITask;
+    Procedure Clear;
+    Procedure AddTask(Const ATask: ITask);
+    Property Count: Int64 Read GetCount;
+  End;
 
-  TAllTaskList = class(TInterfacedObject, IAllTaskList)
-  private
+  TAllTaskList = Class(TInterfacedObject, IAllTaskList)
+  Private
     FListLock: TSRWLock;
     FInternalList: TInterfaceList;
-    function GetCount: Int64;
-  public
-    constructor Create;
-    destructor Destroy; override;
-    function AcquireFirstTask: ITask;
-    procedure Clear;
-    procedure AddTask(const ATask: ITask);
-    procedure RemoveTask(const ATask: ITask);
-    property Count: Int64 read GetCount;
-  end;
+    Function GetCount: Int64;
+  Public
+    Constructor Create;
+    Destructor Destroy; Override;
+    Function AcquireFirstTask: ITask;
+    Procedure Clear;
+    Procedure AddTask(Const ATask: ITask);
+    Procedure RemoveTask(Const ATask: ITask);
+    Property Count: Int64 Read GetCount;
+  End;
 
-  TTask = class(TInterfacedObject, ITask)
-  private
-    FName: string;
+  TTask = Class(TInterfacedObject, ITask)
+  Private
+    FName: String;
     FHWND: HWND;
     FValues: ITaskValues;
     FTerminated: Boolean;
@@ -335,70 +337,70 @@ type
     FWaitForEvent: THandle;
     FWorkerThread: TWorkerThread;
     FCurrentMessage: TMessageObj;
-    function GetName: string;
-    function GetValues: ITaskValues;
-    function GetMessage: ITaskValues;
-    function GetTerminated: Boolean;
-    function GetTaskMethod: TOnTaskEvent;
-    function GetOnTaskMessage: TOnTaskMessage;
-    procedure SetName(const Value: string);
-    procedure SetTerminated(const Value: Boolean);
-    procedure SetTaskMethod(const Value: TOnTaskEvent);
-    procedure SetOnTaskMessage(const Value: TOnTaskMessage);
-  public
-    destructor Destroy; override;
-    constructor Create(const OnTaskComplete: TOnTaskEvent; const WinHandle: HWND);
-    property OnTaskMessage: TOnTaskMessage read GetOnTaskMessage write SetOnTaskMessage;
-    property TaskMethod: TOnTaskEvent read GetTaskMethod write SetTaskMethod;
-    property Terminated: Boolean read GetTerminated write SetTerminated;
-    property Name: string read GetName write SetName;
-    property Message: ITaskValues read GetMessage;
-    property Values: ITaskValues read GetValues;
+    Function GetName: String;
+    Function GetValues: ITaskValues;
+    Function GetMessage: ITaskValues;
+    Function GetTerminated: Boolean;
+    Function GetTaskMethod: TOnTaskEvent;
+    Function GetOnTaskMessage: TOnTaskMessage;
+    Procedure SetName(Const Value: String);
+    Procedure SetTerminated(Const Value: Boolean);
+    Procedure SetTaskMethod(Const Value: TOnTaskEvent);
+    Procedure SetOnTaskMessage(Const Value: TOnTaskMessage);
+  Public
+    Destructor Destroy; Override;
+    Constructor Create(Const OnTaskComplete: TOnTaskEvent; Const WinHandle: HWND);
+    Property OnTaskMessage: TOnTaskMessage Read GetOnTaskMessage Write SetOnTaskMessage;
+    Property TaskMethod: TOnTaskEvent Read GetTaskMethod Write SetTaskMethod;
+    Property Terminated: Boolean Read GetTerminated Write SetTerminated;
+    Property Name: String Read GetName Write SetName;
+    Property Message: ITaskValues Read GetMessage;
+    Property Values: ITaskValues Read GetValues;
     // procedures of the ITask interface
-    procedure SendMessageSync(const Timeout: Integer = cDefaultTimeout);
-  {$IF CompilerVersion >= 20}
-    procedure ExecInMainThreadAndWait(const AThreadProc: TThreadProcedure);
-    procedure ExecInMainThread(const AThreadProc: TThreadProcedure);
-  {$IFEND}
-    procedure WaitFor(const Timeout: Cardinal = INFINITE);
-    procedure SendMessageAsync;
-    procedure SignalWaitFor;
-    procedure Terminate;
-    procedure Release;
-    procedure Run;
-  end;
+    Procedure SendMessageSync(Const Timeout: Integer = cDefaultTimeout);
+{$IF CompilerVersion >= 20}
+    Procedure ExecInMainThreadAndWait(Const AThreadProc: TThreadProcedure);
+    Procedure ExecInMainThread(Const AThreadProc: TThreadProcedure);
+{$IFEND}
+    Procedure WaitFor(Const Timeout: Cardinal = INFINITE);
+    Procedure SendMessageAsync;
+    Procedure SignalWaitFor;
+    Procedure Terminate;
+    Procedure Release;
+    Procedure Run;
+  End;
 
-  TTaskQueue = class(TInterfacedObject, ITaskQueue)
-  private
+  TTaskQueue = Class(TInterfacedObject, ITaskQueue)
+  Private
     FHead: PTaskHeadItem;
     FDeleted: PTaskHeadItem;
     FCriticalSec: TRTLCriticalSection;
-    function AcquireNewItem: PTaskQueueItem;
-    procedure ClearData(const RootItem: PTaskHeadItem);
-    procedure DeleteUnusedItem(const Item: PTaskQueueItem);
-  public
-    constructor Create;
-    destructor Destroy; override;
-    function EnqueueTask: PTaskQueueItem;
-    procedure DequeueTask;
-    function GetQueueSize: Integer;
-  end;
+    Function AcquireNewItem: PTaskQueueItem;
+    Procedure ClearData(Const RootItem: PTaskHeadItem);
+    Procedure DeleteUnusedItem(Const Item: PTaskQueueItem);
+  Public
+    Constructor Create;
+    Destructor Destroy; Override;
+    Function EnqueueTask: PTaskQueueItem;
+    Procedure DequeueTask;
+    Function GetQueueSize: Integer;
+  End;
 
-function AcquireTaskValues: ITaskValues;
-begin
+Function AcquireTaskValues: ITaskValues;
+Begin
   Result := AcquireValueList;
-end;
+End;
 
-function AcquireTaskQueue: ITaskQueue;
-begin
+Function AcquireTaskQueue: ITaskQueue;
+Begin
   Result := TTaskQueue.Create;
-end;
+End;
 
 { TTaskPool }
 
-constructor TTaskPool.Create(const MinPoolSize: Integer);
-begin
-  FWndHandle := DsiAllocateHWnd(WatchWndProc);
+Constructor TTaskPool.Create(Const MinPoolSize: Integer);
+Begin
+  FWndHandle := DSiAllocateHWnd(WatchWndProc);
   FFreeTaskList := TFreeTaskList.Create;
   FAllTaskList := TAllTaskList.Create;
 
@@ -407,171 +409,170 @@ begin
 
   // minimum size of the pool
   FMinPoolSize := MinPoolSize;
-end;
+End;
 
-destructor TTaskPool.Destroy;
-begin
-  if FAllTaskList.Count > 0 then
+Destructor TTaskPool.Destroy;
+Begin
+  If FAllTaskList.Count > 0 Then
     Finalize;
 
   // dealocate window handle
-  DsiDeallocateHWnd(FWndHandle);
+  DSiDeallocateHWnd(FWndHandle);
 
-  inherited;
-end;
+  Inherited;
+End;
 
-procedure TTaskPool.Finalize;
-var
+Procedure TTaskPool.Finalize;
+Var
   ATask: ITask;
-begin
+Begin
   // not running
   FRunning := False;
-
-  repeat
+  Repeat
     ATask := FAllTaskList.AcquireFirstTask;
 
-    if ATask <> nil then
-    begin
+    If ATask <> Nil Then
+    Begin
       ATask.Release;
       ATask.WaitFor(INFINITE);
-    end;
+    End;
 
-  until ATask = nil;
+  Until ATask = Nil;
 
   FAllTaskList.Clear;
   FFreeTaskList.Clear;
-end;
+End;
 
-function TTaskPool.GetFreeTasks: Integer;
-begin
+Function TTaskPool.GetFreeTasks: Integer;
+Begin
   Result := FFreeTaskList.Count;
-end;
+End;
 
-function TTaskPool.GetPoolSize: Integer;
-begin
+Function TTaskPool.GetPoolSize: Integer;
+Begin
   Result := FAllTaskList.Count;
-end;
+End;
 
-procedure TTaskPool.Initialize;
-var
+Procedure TTaskPool.Initialize;
+Var
   I: Integer;
   Task: ITask;
-begin
-  for I := 0 to FMinPoolSize - 1 do
-  begin
+Begin
+  For I := 0 To FMinPoolSize - 1 Do
+  Begin
     Task := TTask.Create(OnTaskComplete, FWndHandle);
     FFreeTaskList.AddTask(Task);
     FAllTaskList.AddTask(Task);
-  end;
+  End;
 
   // set the flag
   FRunning := True;
-end;
+End;
 
-procedure TTaskPool.OnTaskComplete(const ATask: ITask);
-begin
-  if FDynamicSize and (FAllTaskList.Count > FMinPoolSize) then
-  begin
+Procedure TTaskPool.OnTaskComplete(Const ATask: ITask);
+Begin
+  If FDynamicSize And (FAllTaskList.Count > FMinPoolSize) Then
+  Begin
     FAllTaskList.RemoveTask(ATask);
     Exit;
-  end;
+  End;
 
-  if FRunning then
-  begin
+  If FRunning Then
+  Begin
     FFreeTaskList.AddTask(ATask);
     ATask.SignalWaitFor;
-  end;
-end;
+  End;
+End;
 
-procedure TTaskPool.WatchWndProc(var Msg: TMessage);
-var
+Procedure TTaskPool.WatchWndProc(Var Msg: TMessage);
+Var
   MessageObj: TMessageObj;
   TaskMessageProc: TOnTaskMessage;
-begin
-  if Msg.msg = WM_TASK_MESSAGE then
-  begin
+Begin
+  If Msg.Msg = WM_TASK_MESSAGE Then
+  Begin
     MessageObj := TMessageObj(Pointer(Msg.WParam));
-    try
-      if Msg.LParam <> 0 then
-      begin
+    Try
+      If Msg.LParam <> 0 Then
+      Begin
         TaskMessageProc := TOnTaskMessage(PMethod(Msg.LParam)^);
         TaskMessageProc(MessageObj.Msg);
-      end;
-    finally
+      End;
+    Finally
       MessageObj.Free;
-    end;
-  end
-  else
-    Msg.Result := DefWindowProc(FWndHandle, Msg.Msg, Msg.wParam, Msg.lParam);
-end;
+    End;
+  End
+  Else
+    Msg.Result := DefWindowProc(FWndHandle, Msg.Msg, Msg.WParam, Msg.LParam);
+End;
 
-function TTaskPool.AcquireTask(const TaskMethod: TOnTaskEvent; const Name: string; const OnMessage: TOnTaskMessage): ITask;
-begin
+Function TTaskPool.AcquireTask(Const TaskMethod: TOnTaskEvent; Const Name: String; Const OnMessage: TOnTaskMessage): ITask;
+Begin
   Result := AcquireTask(TaskMethod, Name);
   Result.OnTaskMessage := OnMessage;
-end;
+End;
 
-function TTaskPool.AcquireTask(const TaskMethod: TOnTaskEvent; const Name: string): ITask;
-begin
-  if not FRunning then
-    raise Exception.Create('Cannot AcquireTask, the pool is not running!');
-    
+Function TTaskPool.AcquireTask(Const TaskMethod: TOnTaskEvent; Const Name: String): ITask;
+Begin
+  If Not FRunning Then
+    Raise Exception.Create('Cannot AcquireTask, the pool is not running!');
+
   // set task data
   Result := AcquireFreeTask;
   Result.OnTaskMessage := FOnTaskMessage;
   Result.TaskMethod := TaskMethod;
   Result.Name := Name;
   Result.Values.Clear;
-end;
+End;
 
-function TTaskPool.AcquireFreeTask: ITask;
-begin
+Function TTaskPool.AcquireFreeTask: ITask;
+Begin
   Result := FFreeTaskList.AcquireFirstTask;
 
-  if Result = nil then
-  begin
+  If Result = Nil Then
+  Begin
     Result := TTask.Create(OnTaskComplete, FWndHandle);
     FAllTaskList.AddTask(Result);
-  end;
-end;
+  End;
+End;
 
 { TWorkerThread }
 
-constructor TWorkerThread.Create(const Owner: ITask; const OnTaskComplete: TOnTaskEvent);
-begin
+Constructor TWorkerThread.Create(Const Owner: ITask; Const OnTaskComplete: TOnTaskEvent);
+Begin
   FreeOnTerminate := True;
 
   // create the event to put thread to sleep
-  FEvents[0] := CreateEvent(nil, False, False, nil);
-  FEvents[1] := CreateEvent(nil, False, False, nil);
+  FEvents[0] := CreateEvent(Nil, False, False, Nil);
+  FEvents[1] := CreateEvent(Nil, False, False, Nil);
   // set the pool window handle
   FOnTaskComplete := OnTaskComplete;
   // set the owner task with weak ref.
   FOwner := Pointer(Owner);
 
-  inherited Create(False);
-end;
+  Inherited Create(False);
+End;
 
-destructor TWorkerThread.Destroy;
-begin
-  CloseHandle(FEvents[1]);
-  CloseHandle(FEvents[0]);
+Destructor TWorkerThread.Destroy;
+Begin
+  DSiCloseHandleAndNull(FEvents[1]);
+  DSiCloseHandleAndNull(FEvents[0]);
 
-  inherited;
-end;
+  Inherited;
+End;
 
-procedure TWorkerThread.Execute;
-var
+Procedure TWorkerThread.Execute;
+Var
   WaitResult: Cardinal;
-begin
-  inherited;
+Begin
+  Inherited;
 
   // wait until the thread is actually called
   WaitResult := WaitForMultipleObjects(Length(FEvents), @FEvents, False, INFINITE);
 
   // main thread loop
-  while not (WaitResult = WAIT_OBJECT_0) and not Terminated do
-  begin
+  While Not(WaitResult = WAIT_OBJECT_0) And Not Terminated Do
+  Begin
     ITask(FOwner).Terminated := False;
     // execute the task method
     ITask(FOwner).TaskMethod(ITask(FOwner));
@@ -580,352 +581,358 @@ begin
     FOnTaskComplete(ITask(FOwner));
     // wait for the next client call
     WaitResult := WaitForMultipleObjects(Length(FEvents), @FEvents, False, INFINITE);
-  end;
-end;
+  End;
+End;
 
-procedure TWorkerThread.SignalAbort;
-begin
+Procedure TWorkerThread.SignalAbort;
+Begin
   SetEvent(FEvents[0]);
-end;
+End;
 
-procedure TWorkerThread.SignalRun;
-begin
+Procedure TWorkerThread.SignalRun;
+Begin
   SetEvent(FEvents[1]);
-end;
+End;
 
 { TAllTaskList }
 
-procedure TAllTaskList.Clear;
-begin
+Procedure TAllTaskList.Clear;
+Begin
   FListLock.AcquireExclusive;
-  try
+  Try
     FInternalList.Clear;
-  finally
+  Finally
     FListLock.ReleaseExclusive;
-  end;
-end;
+  End;
+End;
 
-constructor TAllTaskList.Create;
-begin
+Constructor TAllTaskList.Create;
+Begin
   FInternalList := TInterfaceList.Create;
   FListLock.Initialize;
-end;
+End;
 
-destructor TAllTaskList.Destroy;
-begin
+Destructor TAllTaskList.Destroy;
+Begin
   FreeAndNil(FInternalList);
 
-  inherited;
-end;
+  Inherited;
+End;
 
-procedure TAllTaskList.AddTask(const ATask: ITask);
-begin
+Procedure TAllTaskList.AddTask(Const ATask: ITask);
+Begin
   FListLock.AcquireExclusive;
-  try
+  Try
     FInternalList.Add(ATask);
-  finally
+  Finally
     FListLock.ReleaseExclusive;
-  end;
-end;
+  End;
+End;
 
-function TAllTaskList.GetCount: Int64;
-begin
+Function TAllTaskList.GetCount: Int64;
+Begin
   FListLock.AcquireShared;
-  try
+  Try
     Result := FInternalList.Count;
-  finally
+  Finally
     FListLock.ReleaseShared;
-  end;
-end;
+  End;
+End;
 
-procedure TAllTaskList.RemoveTask(const ATask: ITask);
-begin
+Procedure TAllTaskList.RemoveTask(Const ATask: ITask);
+Begin
   FListLock.AcquireExclusive;
-  try
+  Try
     FInternalList.Remove(ATask);
-  finally
+  Finally
     FListLock.ReleaseExclusive;
-  end;
-end;
+  End;
+End;
 
-function TAllTaskList.AcquireFirstTask: ITask;
-begin
-  Result := nil;
+Function TAllTaskList.AcquireFirstTask: ITask;
+Begin
+  Result := Nil;
 
   FListLock.AcquireExclusive;
-  try
-    if FInternalList.Count > 0 then
-    begin
+  Try
+    If FInternalList.Count > 0 Then
+    Begin
       Result := ITask(FInternalList.First);
       FInternalList.Remove(FInternalList.First);
-    end;
-  finally
+    End;
+  Finally
     FListLock.ReleaseExclusive;
-  end;
-end;
+  End;
+End;
 
 { TFreeTaskList }
 
-function TFreeTaskList.AcquireFirstTask: ITask;
+Function TFreeTaskList.AcquireFirstTask: ITask;
 {$IFNDEF Threading_NoLockFreeStack}
 {$IF CompilerVersion < 20}
-var
+Var
   Value: TAnyValue;
 {$IFEND}
 {$ENDIF}
-begin
+Begin
 {$IFNDEF Threading_NoLockFreeStack}
-  {$IF CompilerVersion >= 20}
-    FInternalList.Pop(Result);
-  {$ELSE}
-    FInternalList.Pop(Value);
-    Result := ITask(Value.AsInterface);
-  {$IFEND};
+{$IF CompilerVersion >= 20}
+  FInternalList.Pop(Result);
+{$ELSE}
+  FInternalList.Pop(Value);
+  Result := ITask(Value.AsInterface);
+{$IFEND};
 {$ELSE}
   EnterCriticalSection(FCriticalSec);
-  try
-    Result := nil;
+  Try
+    Result := Nil;
 
-    if FInternalList.Count > 0 then
-    begin
+    If FInternalList.Count > 0 Then
+    Begin
       Result := ITask(FInternalList.First);
       FInternalList.Remove(Result);
-    end;
-  finally
+    End;
+  Finally
     LeaveCriticalSection(FCriticalSec);
-  end;
+  End;
 {$ENDIF}
-end;
+End;
 
-procedure TFreeTaskList.AddTask(const ATask: ITask);
-begin
+Procedure TFreeTaskList.AddTask(Const ATask: ITask);
+Begin
 {$IFNDEF Threading_NoLockFreeStack}
   FInternalList.Push(ATask);
 {$ELSE}
   EnterCriticalSection(FCriticalSec);
-  try
+  Try
     FInternalList.Add(ATask);
-  finally
+  Finally
     LeaveCriticalSection(FCriticalSec);
-  end;
+  End;
 {$ENDIF}
-end;
+End;
 
-procedure TFreeTaskList.Clear;
-begin
+Procedure TFreeTaskList.Clear;
+Begin
 {$IFNDEF Threading_NoLockFreeStack}
   FInternalList.Clear;
 {$ELSE}
   EnterCriticalSection(FCriticalSec);
-  try
+  Try
     FInternalList.Clear;
-  finally
+  Finally
     LeaveCriticalSection(FCriticalSec);
-  end;
+  End;
 {$ENDIF}
-end;
+End;
 
-constructor TFreeTaskList.Create;
-const
+Constructor TFreeTaskList.Create;
+Const
   cInitialSize = 500;
-begin
+Begin
 {$IFNDEF Threading_NoLockFreeStack}
-  {$IF CompilerVersion >= 20}
-    FInternalList := TLockFreeStack<ITask>.Create(cInitialSize);
-  {$ELSE}
-    FInternalList := TLockFreeStack.Create(cInitialSize);
-  {$IFEND};
+{$IF CompilerVersion >= 20}
+  FInternalList := TLockFreeStack<ITask>.Create(cInitialSize);
+{$ELSE}
+  FInternalList := TLockFreeStack.Create(cInitialSize);
+{$IFEND};
 {$ELSE}
   InitializeCriticalSectionAndSpinCount(FCriticalSec, cCSSpinCount);
   FInternalList := TInterfaceList.Create;
 {$ENDIF}
-end;
+End;
 
-destructor TFreeTaskList.Destroy;
-begin
+Destructor TFreeTaskList.Destroy;
+Begin
   FreeAndNil(FInternalList);
 {$IFDEF Threading_NoLockFreeStack}
   DeleteCriticalSection(FCriticalSec);
 {$ENDIF}
+  Inherited;
+End;
 
-  inherited;
-end;
-
-function TFreeTaskList.GetCount: Int64;
-begin
+Function TFreeTaskList.GetCount: Int64;
+Begin
 {$IFNDEF Threading_NoLockFreeStack}
   Result := FInternalList.Count;
 {$ELSE}
   EnterCriticalSection(FCriticalSec);
-  try
+  Try
     Result := FInternalList.Count;
-  finally
+  Finally
     LeaveCriticalSection(FCriticalSec);
-  end;
+  End;
 {$ENDIF}
-end;
+End;
 
 { TTask }
 
-constructor TTask.Create(const OnTaskComplete: TOnTaskEvent; const WinHandle: HWND);
-begin
+Constructor TTask.Create(Const OnTaskComplete: TOnTaskEvent; Const WinHandle: HWND);
+Begin
   FWorkerThread := TWorkerThread.Create(Self, OnTaskComplete);
-  FWaitForEvent := CreateEvent(nil, False, False, nil);
+  FWaitForEvent := CreateEvent(Nil, False, False, Nil);
   FThreadHandle := FWorkerThread.Handle;
   FValues := AcquireTaskValues;
   FHWND := WinHandle;
-end;
+End;
 
-destructor TTask.Destroy;
-begin
-  FWorkerThread.Terminate;
+Destructor TTask.Destroy;
+Begin
+  // BugFix CPsoft.be
+  If Not FWorkerThread.Terminated Then
+    FWorkerThread.Terminate;
   FWorkerThread.SignalAbort;
-  // Leak Fix Limagito
-  If FWaitForEvent <> 0 Then
-    CloseHandle(FWaitForEvent);
+  // LeakFix CPsoft.be
+  DSiCloseHandleAndNull(FWaitForEvent);
 
-  inherited;
-end;
+  Inherited;
+End;
 
-function TTask.GetValues: ITaskValues;
-begin
+Function TTask.GetValues: ITaskValues;
+Begin
   Result := FValues;
-end;
+End;
 
-function TTask.GetMessage: ITaskValues;
-begin
-  if FCurrentMessage = nil then
+Function TTask.GetMessage: ITaskValues;
+Begin
+  If FCurrentMessage = Nil Then
     FCurrentMessage := TMessageObj.Create(TTaskMessage.Create(FName));
 
   // return current message
   Result := FCurrentMessage.Msg.Values;
-end;
+End;
 
-function TTask.GetName: string;
-begin
+Function TTask.GetName: String;
+Begin
   Result := FName;
-end;
+End;
 
-function TTask.GetOnTaskMessage: TOnTaskMessage;
-begin
+Function TTask.GetOnTaskMessage: TOnTaskMessage;
+Begin
   Result := FOnTaskMessage;
-end;
+End;
 
-function TTask.GetTaskMethod: TOnTaskEvent;
-begin
+Function TTask.GetTaskMethod: TOnTaskEvent;
+Begin
   Result := FTaskMethod;
-end;
+End;
 
-function TTask.GetTerminated: Boolean;
-begin
+Function TTask.GetTerminated: Boolean;
+Begin
   Result := FTerminated;
-end;
+End;
 
-procedure TTask.Run;
-begin
+Procedure TTask.Run;
+Begin
   FWorkerThread.SignalRun;
-end;
+End;
 
-procedure TTask.SendMessageAsync;
-var
+Procedure TTask.SendMessageAsync;
+Var
   AResult: Boolean;
   TryCount: Integer;
-begin
+Begin
   AResult := False;
   TryCount := 0;
 
-  while not AResult and (TryCount < 3) do
-  begin
+  While Not AResult And (TryCount < 3) Do
+  Begin
     AResult := PostMessage(FHWND, WM_TASK_MESSAGE, WParam(Pointer(FCurrentMessage)), LParam(Addr(TMethod(FOnTaskMessage))));
     Inc(TryCount);
-  end;
+  End;
 
   // check result
-  case AResult of
-    False: FreeAndNil(FCurrentMessage);
-    True: FCurrentMessage := nil;
-  end;
-end;
+  Case AResult Of
+    False:
+      FreeAndNil(FCurrentMessage);
+    True:
+      FCurrentMessage := Nil;
+  End;
+End;
 
-procedure TTask.SendMessageSync(const Timeout: Integer);
-var
+Procedure TTask.SendMessageSync(Const Timeout: Integer);
+Var
   AResult: LRESULT;
   TryCount: Integer;
   Response: {$IF CompilerVersion >= 23}PDWORD_PTR{$ELSE}Cardinal{$IFEND};
-begin
-  {$IF CompilerVersion >= 23}Response := nil{$ELSE}Response := 0{$IFEND};
+Begin
+{$IF CompilerVersion >= 23}Response := Nil{$ELSE}Response := 0{$IFEND};
   TryCount := 0;
   AResult := 1;
 
-  while (AResult <> 0) and (TryCount < 3) do
-  begin
-    AResult := SendMessageTimeout(FHWND, WM_TASK_MESSAGE, WParam(Pointer(FCurrentMessage)), LParam(Addr(TMethod(FOnTaskMessage))), SMTO_BLOCK, Timeout, Response);
+  While (AResult <> 0) And (TryCount < 3) Do
+  Begin
+    AResult := SendMessageTimeout(FHWND, WM_TASK_MESSAGE, WParam(Pointer(FCurrentMessage)), LParam(Addr(TMethod(FOnTaskMessage))), SMTO_BLOCK, Timeout,
+      Response);
     Inc(TryCount);
-  end;
+  End;
 
-  case (AResult <> 0) of
-    False: FreeAndNil(FCurrentMessage);
-    True: FCurrentMessage := nil;
-  end;
-end;
+  Case (AResult <> 0) Of
+    False:
+      FreeAndNil(FCurrentMessage);
+    True:
+      FCurrentMessage := Nil;
+  End;
+End;
 
-procedure TTask.SetName(const Value: string);
-begin
+Procedure TTask.SetName(Const Value: String);
+Begin
   FName := Value;
-end;
+End;
 
-procedure TTask.SetOnTaskMessage(const Value: TOnTaskMessage);
-begin
+Procedure TTask.SetOnTaskMessage(Const Value: TOnTaskMessage);
+Begin
   FOnTaskMessage := Value;
-end;
+End;
 
-procedure TTask.SetTaskMethod(const Value: TOnTaskEvent);
-begin
+Procedure TTask.SetTaskMethod(Const Value: TOnTaskEvent);
+Begin
   FTaskMethod := Value;
-end;
+End;
 
-procedure TTask.SetTerminated(const Value: Boolean);
-begin
+Procedure TTask.SetTerminated(Const Value: Boolean);
+Begin
   FTerminated := Value;
-end;
+End;
 
-procedure TTask.Release;
-begin
-  FWorkerThread.Terminate;
+Procedure TTask.Release;
+Begin
+  If Not FWorkerThread.Terminated Then
+    FWorkerThread.Terminate;
   FWorkerThread.SignalAbort;
-end;
+End;
 
-procedure TTask.SignalWaitFor;
-begin
+Procedure TTask.SignalWaitFor;
+Begin
   SetEvent(FWaitForEvent);
-end;
+End;
 
-procedure TTask.Terminate;
-begin
+Procedure TTask.Terminate;
+Begin
   FTerminated := True;
-end;
+End;
 
-procedure TTask.WaitFor(const Timeout: Cardinal);
-begin
+Procedure TTask.WaitFor(Const Timeout: Cardinal);
+Begin
   WaitForSingleObject(FThreadHandle, Timeout);
-end;
+End;
 
 {$IF CompilerVersion >= 20}
-procedure TTask.ExecInMainThreadAndWait(const AThreadProc: TThreadProcedure);
-begin
+
+Procedure TTask.ExecInMainThreadAndWait(Const AThreadProc: TThreadProcedure);
+Begin
   FWorkerThread.Synchronize(AThreadProc);
-end;
+End;
 
-procedure TTask.ExecInMainThread(const AThreadProc: TThreadProcedure);
-begin
+Procedure TTask.ExecInMainThread(Const AThreadProc: TThreadProcedure);
+Begin
   FWorkerThread.Queue(AThreadProc);
-end;
+End;
 {$IFEND}
-
 { TTaskQueue }
 
-constructor TTaskQueue.Create;
-begin
+Constructor TTaskQueue.Create;
+Begin
   InitializeCriticalSectionAndSpinCount(FCriticalSec, cCSSpinCount);
 
   // create nodes
@@ -933,18 +940,18 @@ begin
   New(FHead);
 
   // set pointer to last
-  FDeleted.First := nil;
-  FDeleted.Last := nil;
+  FDeleted.First := Nil;
+  FDeleted.Last := Nil;
   FDeleted.Count := 0;
 
   // set pointer to last
-  FHead.First := nil;
-  FHead.Last := nil;
+  FHead.First := Nil;
+  FHead.Last := Nil;
   FHead.Count := 0;
-end;
+End;
 
-destructor TTaskQueue.Destroy;
-begin
+Destructor TTaskQueue.Destroy;
+Begin
   ClearData(FDeleted);
   ClearData(FHead);
   Dispose(FDeleted);
@@ -953,164 +960,166 @@ begin
   // delete the critical section last
   DeleteCriticalSection(FCriticalSec);
 
-  inherited;
-end;
+  Inherited;
+End;
 
-procedure TTaskQueue.ClearData(const RootItem: PTaskHeadItem);
-var
+Procedure TTaskQueue.ClearData(Const RootItem: PTaskHeadItem);
+Var
   Item: PTaskQueueItem;
   OldItem: PTaskQueueItem;
-begin
+Begin
   EnterCriticalSection(FCriticalSec);
-  try
+  Try
     Item := RootItem.Last;
 
-    while Item <> nil do
-    begin
+    While Item <> Nil Do
+    Begin
       OldItem := Item;
       Item := Item.Next;
 
-      CloseHandle(OldItem.Event);
+      DSiCloseHandleAndNull(OldItem.Event);
       Dispose(OldItem);
-    end;
-  finally
+    End;
+  Finally
     LeaveCriticalSection(FCriticalSec);
-  end;
-end;
+  End;
+End;
 
-function TTaskQueue.AcquireNewItem: PTaskQueueItem;
-begin
-  if FDeleted.Last <> nil then
-  begin
+Function TTaskQueue.AcquireNewItem: PTaskQueueItem;
+Begin
+  If FDeleted.Last <> Nil Then
+  Begin
     Result := FDeleted.Last;
     FDeleted.Last := FDeleted.Last.Next;
     FDeleted.Count := FDeleted.Count - 1;
 
-    if FDeleted.Last = nil then
-      FDeleted.First := nil;
-  end
-  else
-  begin
+    If FDeleted.Last = Nil Then
+      FDeleted.First := Nil;
+  End
+  Else
+  Begin
     New(Result);
-    Result.Event := CreateEvent(nil, False, False, nil);
-  end;
+    Result.Event := CreateEvent(Nil, False, False, Nil);
+  End;
 
   // next is always nil
-  Result.Next := nil;
-end;
+  Result.Next := Nil;
+End;
 
-procedure TTaskQueue.DeleteUnusedItem(const Item: PTaskQueueItem);
-begin
+Procedure TTaskQueue.DeleteUnusedItem(Const Item: PTaskQueueItem);
+Begin
   // rewire the first element
-  case FDeleted.First <> nil of
-    True: FDeleted.First.Next := Item;
-    False: FDeleted.Last := Item;
-  end;
+  Case FDeleted.First <> Nil Of
+    True:
+      FDeleted.First.Next := Item;
+    False:
+      FDeleted.Last := Item;
+  End;
 
   // add the item at head
   FDeleted.Count := FDeleted.Count + 1;
   FDeleted.First := Item;
-  Item.Next := nil;
-end;
+  Item.Next := Nil;
+End;
 
-function TTaskQueue.EnqueueTask: PTaskQueueItem;
-begin
+Function TTaskQueue.EnqueueTask: PTaskQueueItem;
+Begin
   // acquire new item
   Result := AcquireNewItem;
 
   EnterCriticalSection(FCriticalSec);
-  try
+  Try
     // rewire the list
     FHead.Count := FHead.Count + 1;
 
     // rewire the first element
-    if FHead.First <> nil then
+    If FHead.First <> Nil Then
       FHead.First.Next := Result;
 
     // Head.First points to new element
     FHead.First := Result;
 
-    if FHead.Last = nil then
-    begin
+    If FHead.Last = Nil Then
+    Begin
       SetEvent(Result.Event);
       FHead.Last := Result;
-    end;
-  finally
+    End;
+  Finally
     LeaveCriticalSection(FCriticalSec);
-  end;
-end;
+  End;
+End;
 
-procedure TTaskQueue.DequeueTask;
-var
+Procedure TTaskQueue.DequeueTask;
+Var
   CurrItem: PTaskQueueItem;
   NextItem: PTaskQueueItem;
-begin
+Begin
   EnterCriticalSection(FCriticalSec);
-  try
+  Try
     CurrItem := FHead.Last;
-    try
+    Try
       FHead.Count := FHead.Count - 1;
       NextItem := CurrItem.Next;
       FHead.Last := NextItem;
 
-      if NextItem <> nil then
+      If NextItem <> Nil Then
         // resume the oldest thread
         SetEvent(NextItem.Event)
-      else
-        FHead.First := nil;
-    finally
+      Else
+        FHead.First := Nil;
+    Finally
       DeleteUnusedItem(CurrItem);
-    end;
-  finally
+    End;
+  Finally
     LeaveCriticalSection(FCriticalSec);
-  end;
-end;
+  End;
+End;
 
-function TTaskQueue.GetQueueSize: Integer;
-begin
+Function TTaskQueue.GetQueueSize: Integer;
+Begin
   EnterCriticalSection(FCriticalSec);
-  try
-    if FHead.First <> nil then
+  Try
+    If FHead.First <> Nil Then
       Result := FHead.Count
-    else
+    Else
       Result := 0;
-  finally
+  Finally
     LeaveCriticalSection(FCriticalSec);
-  end;
-end;
+  End;
+End;
 
 { TQueueItem }
 
 {$IF CompilerVersion >= 17}
-procedure TTaskQueueItem.WaitFor;
-begin
-  WaitForSingleObject(Event, INFINITE);
-end;
-{$IFEND}
 
+Procedure TTaskQueueItem.WaitFor;
+Begin
+  WaitForSingleObject(Event, INFINITE);
+End;
+{$IFEND}
 { TMessageObj }
 
-constructor TMessageObj.Create(const Msg: ITaskMessage);
-begin
+Constructor TMessageObj.Create(Const Msg: ITaskMessage);
+Begin
   FMessage := Msg;
-end;
+End;
 
 { TTaskMessage }
 
-constructor TTaskMessage.Create(const Name: string);
-begin
+Constructor TTaskMessage.Create(Const Name: String);
+Begin
   FName := Name;
   FValues := AcquireTaskValues;
-end;
+End;
 
-function TTaskMessage.GetName: string;
-begin
+Function TTaskMessage.GetName: String;
+Begin
   Result := FName;
-end;
+End;
 
-function TTaskMessage.GetValues: ITaskValues;
-begin
+Function TTaskMessage.GetValues: ITaskValues;
+Begin
   Result := FValues;
-end;
+End;
 
-end.
+End.

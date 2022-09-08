@@ -76,7 +76,7 @@ uses
   Windows, SysUtils, Classes, DateUtils,
 
   // Indy units
-  {$IFNDEF Indy9}IdCustomTCPServer, idContext, IdExceptionCore, IdYarn,{$ENDIF}
+  IdCustomTCPServer, idContext, IdExceptionCore, IdYarn,
   IdBaseComponent, IdComponent, IdTCPServer, IdTCPConnection, IdException,
   IdTCPClient, IdGlobal, IdSocketHandle,
 
@@ -98,8 +98,7 @@ type
 
 type
   // indy version specific declarations
-  TIMCContext = {$IFDEF Indy9}TIdPeerThread{$ELSE}TIdContext{$ENDIF};
-  {$IFDEF Indy9}TIdBytes = array of Byte;{$ENDIF}
+  TIMCContext = TIdContext;
   TIPVersion = (ipV4, ipV6);
 
   IBinding = Interface(IInterface)
@@ -276,7 +275,7 @@ type
     property Items[const Index: Integer]: IBinding read GetItem write SetItem; default;
   end;
 
-  TServerContext = class({$IFDEF Indy9}TIdPeerThread{$ELSE}TIdServerContext{$ENDIF})
+  TServerContext = class(TIdServerContext)
   private
     FContext: ICommContext;
   public
@@ -294,28 +293,19 @@ end;
 
 function GetBufferSize(const AConnection: TIdTCPConnection): Integer;
 begin
-{$IFDEF Indy9}
-   Result := AConnection.RecvBufferSize;
-{$ELSE}
   Result := AConnection.IOHandler.InputBuffer.Size;
-{$ENDIF}
 end;
 
 procedure ReadBuff(const AConnection: TIdTCPConnection;
                    const DataLength: Integer;
                    var IDAsBytes: TIdBytes);
 begin
-{$IFDEF Indy9}
-  SetLength(IDAsBytes, DataLength);
-  AConnection.ReadBuffer(IDAsBytes[0], DataLength);
-{$ELSE}
   AConnection.IOHandler.ReadBytes(IDAsBytes, DataLength);
-{$ENDIF}
 end;
 
-function ReadInt(const AConnection: TIdTCPConnection):{$IFDEF Indy9}Integer{$ELSE}Int64{$ENDIF};
+function ReadInt(const AConnection: TIdTCPConnection):Int64;
 begin
-  Result := {$IFDEF Indy9}AConnection.ReadInteger{$ELSE}AConnection.IOHandler.ReadInt64{$ENDIF};
+  Result := AConnection.IOHandler.ReadInt64;
 end;
 
 // *****************************************************************************************
@@ -335,11 +325,8 @@ begin
   FTCPServer.OnExecute := OnServerExecute;
   FTCPServer.OnConnect := DoOnClientConnect;
   FTCPServer.OnDisconnect := DoOnClientDisconnect;
-{$IFDEF Indy9}
-  FTCPServer.ThreadClass := TServerContext;
-{$ELSE}
   FTCPServer.ContextClass := TServerContext;
-{$ENDIF}
+
   // set the default client context class
   FTCPServer.CommClientClass := TCommClient;
 
@@ -405,7 +392,7 @@ var
   UsedFilters: IUsedFilters;
 begin
   try
-    with AContext.Connection{$IFNDEF Indy9}.IOHandler{$ENDIF} do
+    with AContext.Connection.IOHandler do
     begin
       ReadTimeout := FExecuteTimeout;
 
@@ -438,11 +425,16 @@ begin
         // execute the actual request handler
         FOnExecuteRequest(TServerContext(AContext).Context, Request, Response);
 
-        if (UsedFilters <> nil) and (UsedFilters.FilterList.Count > 0) then
-          Response.Data.ApplyInputFilters(UsedFilters.FilterList);
+        if UsedFilters <> nil then
+        begin
+          if UsedFilters.FilterList.Count > 0 then
+            Response.Data.ApplyInputFilters(UsedFilters.FilterList);
+          // Interfaced Object, Auto Destroy
+          UsedFilters := Nil;
+        end;
 
         // send the response back to the caller
-        {$IFDEF Indy9}OpenWriteBuffer{$ELSE}WriteBufferOpen{$ENDIF};
+        WriteBufferOpen;
         try
           // write the data stream to TCP
           Response.Data.Storage.Seek(0, soFromBeginning);
@@ -454,23 +446,23 @@ begin
             Move(Response.ID[1], IDAsBytes[0], DataLength);
 
           // write data
-          {$IFDEF Indy9}WriteInteger{$ELSE}Write{$ENDIF}(DataLength);
-          {$IFDEF Indy9}WriteBuffer{$ELSE}Write{$ENDIF}(IDAsBytes{$IFDEF Indy9}[0]{$ENDIF}, DataLength);
-          {$IFDEF Indy9}WriteInteger{$ELSE}Write{$ENDIF}(Response.Data.Storage.Size);
-          {$IFDEF Indy9}WriteStream{$ELSE}Write{$ENDIF}(Response.Data.Storage);
+          Write(DataLength);
+          Write(IDAsBytes, DataLength);
+          Write(Response.Data.Storage.Size);
+          Write(Response.Data.Storage);
         finally
-          {$IFDEF Indy9}CloseWriteBuffer{$ELSE}WriteBufferClose{$ENDIF};
+          WriteBufferClose;
         end;
       except
         on E: Exception do
         begin
           // we had an error, send back the -1 as data size to indicate that
-          {$IFDEF Indy9}OpenWriteBuffer{$ELSE}WriteBufferOpen{$ENDIF};
+          WriteBufferOpen;
           try
             DataLength := -1;
-            {$IFDEF Indy9}WriteInteger{$ELSE}Write{$ENDIF}(DataLength);
+            Write(DataLength);
           finally
-            {$IFDEF Indy9}CloseWriteBuffer{$ELSE}WriteBufferClose{$ENDIF};
+            WriteBufferClose;
           end;
 
           if Assigned(FOnServerError) then
@@ -481,6 +473,9 @@ begin
           end;
         end;
       end;
+      // Clear
+      Request.Clear;
+      Response.Clear;
     end;
   except
     on E: Exception do
@@ -560,12 +555,8 @@ begin
   FTCPClient.Host := StrBefore(':', FServerAddress);
   FTCPClient.Port := StrToInt(StrAfter(':', FServerAddress));
 
-{$IFDEF INDY9}
-  FTCPClient.Connect(ConnectTimeout);
-{$ELSE}
   FTCPClient.ConnectTimeout := ConnectTimeout;
   FTCPClient.Connect;
-{$ENDIF}
 
   // set if we are connected or not
   FIsConnected := FTCPClient.Connected;
@@ -576,8 +567,8 @@ begin
   try
     // if FTCPClient.Connected then // BugFix CPsoft
     // begin
-      FTCPClient.Disconnect;
-      FIsConnected := False;
+    FTCPClient.Disconnect;
+    FIsConnected := False;
     // end;
   except
     on E: EIdNotConnected do
@@ -613,9 +604,9 @@ begin
     if FFilters.Count > 0 then
       Request.Data.ApplyInputFilters(FFilters);
 
-    with FTCPClient{$IFNDEF Indy9}.IOHandler{$ENDIF} do
+    with FTCPClient.IOHandler do
     begin
-      {$IFDEF Indy9}OpenWriteBuffer{$ELSE}WriteBufferOpen{$ENDIF};
+      WriteBufferOpen;
       try
         Request.Data.Storage.Seek(0, soFromBeginning);
         DataLength := Length(Request.ID) * SizeOf(uchar);
@@ -626,12 +617,12 @@ begin
           Move(Request.ID[1], IDAsBytes[0], DataLength);
 
         // write data
-        {$IFDEF Indy9}WriteInteger{$ELSE}Write{$ENDIF}(DataLength);
-        {$IFDEF Indy9}WriteBuffer{$ELSE}Write{$ENDIF}(IDAsBytes{$IFDEF Indy9}[0]{$ENDIF}, DataLength);
-        {$IFDEF Indy9}WriteInteger{$ELSE}Write{$ENDIF}(Request.Data.Storage.Size);
-        {$IFDEF Indy9}WriteStream{$ELSE}Write{$ENDIF}(Request.Data.Storage);
+        Write(DataLength);
+        Write(IDAsBytes, DataLength);
+        Write(Request.Data.Storage.Size);
+        Write(Request.Data.Storage);
       finally
-        {$IFDEF Indy9}CloseWriteBuffer{$ELSE}WriteBufferClose{$ENDIF};
+        WriteBufferClose;
       end;
 
       // set read timeout and read
