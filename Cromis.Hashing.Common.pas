@@ -302,6 +302,66 @@ begin
   begin
     Result := Result + PWord(Data)^;
     // splitting the pointer math keeps the amount of registers pushed at 2
+    Data := Pointer(NativeUInt(Data) + SizeOf(Word));
+    TempPart := (PWord(Data)^ shl 11) xor Result;
+    Result := (Result shl 16) xor TempPart;
+    Data  := Pointer(NativeUInt(Data) + SizeOf(Word));
+    Result := Result + (Result shr 11);
+    Dec(RemainingDWords);
+  end;
+  // Handle end cases
+  if RemainingBytes = 3 then
+  begin
+    Result := Result + PWord(Data)^;
+    Result := Result xor (Result shl 16);
+    Data  := Pointer(NativeUInt(Data) + SizeOf(Word)); // skip to the last byte
+    Result := Result xor ((PByte(Data)^ shl 18));
+    Result := Result + (Result shr 11);
+  end
+  else if RemainingBytes = 2 then
+  begin
+    Result := Result +  PWord(Data)^;
+    Result := Result xor (Result shl 11);
+    Result := Result + (Result shr 17);
+  end
+  else if RemainingBytes = 1 then
+  begin
+    Result := Result + PByte(Data)^;
+    Result := Result xor (Result shl 10);
+    Result := Result + (Result shr 1);
+  end;
+  // Force "avalanching" of final 127 bits
+  Result := Result xor (Result shl 3);
+  Result := Result +   (Result shr 5);
+  Result := Result xor (Result shl 4);
+  Result := Result +   (Result shr 17);
+  Result := Result xor (Result shl 25);
+  Result := Result +   (Result shr 6);
+end;
+{$OVERFLOWCHECKS ON}
+
+(*
+{$OVERFLOWCHECKS OFF}
+function Hash_SuperFastHash(Data: Pointer; const Length: Cardinal): Cardinal;
+var
+  TempPart: Cardinal;
+  RemainingBytes: Integer;
+  RemainingDWords: Integer;
+begin
+  if not Assigned(Data) or (Length <= 0) then
+  begin
+    Result := 0;
+    Exit;
+  end;
+  Result := Length;
+  RemainingBytes := Length and 3; // mod 4
+  RemainingDWords := Length shr 2; // div 4
+
+  // main loop
+  while RemainingDWords > 0 do
+  begin
+    Result := Result + PWord(Data)^;
+    // splitting the pointer math keeps the amount of registers pushed at 2
     Data := Pointer(Cardinal(Data) + SizeOf(Word));
     TempPart := (PWord(Data)^ shl 11) xor Result;
     Result := (Result shl 16) xor TempPart;
@@ -339,5 +399,5 @@ begin
   Result := Result +   (Result shr 6);
 end;
 {$OVERFLOWCHECKS ON}
-
+*)
 end.
