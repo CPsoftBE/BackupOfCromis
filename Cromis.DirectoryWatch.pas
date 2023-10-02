@@ -62,6 +62,8 @@
   *  - Use unicode strings for all notifications
   * 15/05/2014 (1.4.1)
   *  - WaitForFileReady changed to function to indicate success or failure
+  * 10/03/2023
+  *  - fixed Delphi 11.x compatibility according to https://stackoverflow.com/questions/76693497/tested-code-in-seattle-is-giving-an-access-violation-in-alexandria
   * ============================================================================
 *)
 
@@ -276,7 +278,7 @@ Begin
               // get memory for filename and fill it with data
               GetMem(NotifyRecord.AMsg, NotifyData^.FileNameLength + SizeOf(WideChar));
               Move(NotifyData^.FileName, Pointer(NotifyRecord.AMsg)^, NotifyData^.FileNameLength);
-              PWord(Cardinal(NotifyRecord.AMsg) + NotifyData^.FileNameLength)^ := 0;
+              PWord(NativeUint(NotifyRecord.AMsg) + NotifyData^.FileNameLength)^ := 0;
               // send the message about the filename information
               PostMessage(FWndHandle, WM_DIRWATCH_NOTIFY, WParam(NotifyRecord), 0);
               // advance to the next entry in the current buffer
