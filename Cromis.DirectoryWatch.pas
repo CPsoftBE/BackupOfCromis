@@ -66,6 +66,9 @@
   *  - fixed Delphi 11.x compatibility according to
   *    https://stackoverflow.com/questions/76693497/tested-code-in-seattle-is-giving-an-access-violation-in-alexandria and
   *    https://www.delphipraxis.net/60995-readdirectorychangesw-wird-mehrfach-ausgeloest-warum-2.html
+  * 10/03/2023 slemke76
+  *  - added TFileWatchThread for checking if File is readable or still in use (e.g. copy-operation)
+  *    Event: waFileIsReadable
   * ============================================================================
 *)
 
@@ -102,7 +105,7 @@ Type
   TWatchOptions = Set Of TWatchOption;
 
   // the actions that are the result of the watch being triggered
-  TWatchAction = (waAdded, waRemoved, waModified, waRenamedOld, waRenamedNew);
+  TWatchAction = (waAdded, waRemoved, waModified, waRenamedOld, waRenamedNew, waFileIsReadable);
   TWatchActions = Set Of TWatchAction;
 
   TFileChangeNotifyEvent = Procedure(Const Sender: TObject; Const Action: TWatchAction; Const FileName: ustring) Of Object;
@@ -183,6 +186,21 @@ Type
     AMsg: puchar;
   End;
 
+  TFileWatchThread = Class(TThread)
+  Private
+    FChangeEvent: THandle;
+    FAbortEvent: THandle;
+    FWndHandle: HWND;
+    FDirectory: String;
+    FFilename     : string;
+    Procedure SignalError(Const ErrorMessage: ustring; ErrorCode: Cardinal = 0; ErrorType: LParam = 0);
+  Protected
+    Procedure Execute; Override;
+  Public
+    Constructor Create(Const Directory: String; const Filename: string; Const WndHandle: HWND);
+    Destructor Destroy; Override;
+  End;
+
   TDirWatchThread = Class(TThread)
   Private
     FWatchSubTree: Boolean;
@@ -194,6 +212,7 @@ Type
     FDirectory: String;
     FIOResult: Pointer;
     FFilter: Integer;
+    FWatchFilesThread  : TThreadList;
     Procedure SignalError(Const ErrorMessage: ustring; ErrorCode: Cardinal = 0; ErrorType: LParam = 0);
   Protected
     Procedure Execute; Override;
@@ -228,6 +247,16 @@ Begin
   End;
 End;
 
+function isDirectory(const FileName: string): boolean;
+var
+  R: DWORD;
+begin
+  R := GetFileAttributes(PChar(FileName));
+  Result := (R <> DWORD(-1)) and ((R and FILE_ATTRIBUTE_DIRECTORY) <> 0);
+end;
+
+{ --- TDirWatchThread --- }
+
 Procedure TDirWatchThread.Execute;
 Var
   NotifyData: PFILE_NOTIFY_INFORMATION;
@@ -239,6 +268,10 @@ Var
   NextEntry: Cardinal;
   Overlap: TOverlapped;
   ResSize: Cardinal;
+  FileWatchThread: TFileWatchThread;
+  LockedList: TList;
+  i: integer;
+  createNewThread: boolean;
 Begin
   FillChar(Overlap, SizeOf(TOverlapped), 0);
   Overlap.hEvent := FChangeEvent;
@@ -281,6 +314,44 @@ Begin
               GetMem(NotifyRecord.AMsg, NotifyData^.FileNameLength + SizeOf(WideChar));
               Move(NotifyData^.FileName, Pointer(NotifyRecord.AMsg)^, NotifyData^.FileNameLength);
               PWord(NativeUint(NotifyRecord.AMsg) + NotifyData^.FileNameLength)^ := 0;
+
+              {--------------}
+            // Action auswerten
+            // - nur, wenn es sich um eine Datei handelt, die hinzugefügt oder geändert wurde
+            if not isDirectory(FDirectory + NotifyRecord.AMsg) AND
+                  (TWatchAction((Integer(NotifyRecord.Code) - 1)) IN [waAdded, waModified]) then begin
+              // Neuen FileWatch Thread erstellen, damit wir benachrichtig werden, wenn die Datei zugreifbar ist
+
+              // Prüfen, ob es für diese Datei bereits einen Thread gibt
+              createNewThread := true;
+              LockedList := FWatchFilesThread.LockList;
+              try
+                for i := LockedList.Count - 1 downto 0 do
+                begin
+                  if (TFileWatchThread(LockedList.Items[i]).FFilename = NotifyRecord.AMsg) and
+                     (TFileWatchThread(LockedList.Items[i]).FDirectory = FDirectory)then begin
+                    createNewThread := false;
+                  end;
+                end;
+              finally
+                 FWatchFilesThread.UnlockList;
+              end;
+
+              if createNewThread then begin
+
+                FileWatchThread := TFileWatchThread.Create(FDirectory,
+                                             NotifyRecord.AMsg,
+                                             FWndHandle);
+                FWatchFilesThread.Add(FileWatchThread);
+                // FileWatchThread.OnTerminate := FileWatchThreadTerminate;
+              end;
+
+            end;
+            // ----
+
+
+              {--------------}
+
               // send the message about the filename information
               PostMessage(FWndHandle, WM_DIRWATCH_NOTIFY, WParam(NotifyRecord), 0);
               // advance to the next entry in the current buffer
@@ -314,27 +385,6 @@ Begin
       End;
     End;
 End;
-
-(* Example Code form Madshi
-  procedure Proc2;
-  var pStrVar : TPString;
-  begin
-  // as you know already, "GetMem" does not initialize the memory
-  GetMem(pStrVar, sizeOf(string));
-
-  // so if you're doing it yourself, you're out of danger
-  ZeroMemory(pStrVar, sizeOf(string));
-
-  // "pStrVar^" is initialized this time
-  // -> Delphi knows that "pStrVar^" holds no string currently
-  // -> Delphi assigns the new value to "pStrVar^" successfully
-  pStrVar^ := 'test';
-
-  // FreeMem frees the allocated memory, but the "test" string does NOT get freed
-  // this is at least a memory leak, sometimes it can even result in a crash
-  FreeMem(pStrVar);
-  end;
-*)
 
 Procedure TDirWatchThread.SignalAbort;
 Begin
@@ -389,11 +439,33 @@ Begin
   FDirectory := Directory;
   FFilter := TypeFilter;
 
+  // für die Verwaltung der FileWatchThreads
+  FWatchFilesThread := TThreadList.Create;
+
   Inherited Create(False);
 End;
 
 Destructor TDirWatchThread.Destroy;
+var
+  LockedList: TList;
+  i: integer;
 Begin
+   // Alle FileWatchThreads beenden
+  LockedList := FWatchFilesThread.LockList;
+  try
+    for i := LockedList.Count - 1 downto 0 do
+    begin
+      TFileWatchThread(LockedList.Items[i]).OnTerminate := nil;
+      TFileWatchThread(LockedList.Items[i]).Terminate;
+    end;
+  finally
+    FWatchFilesThread.UnlockList;
+  end;
+
+  FWatchFilesThread.Free;
+  // --------------------------------
+
+
   DSiCloseHandleAndNull(FChangeEvent);
   DSiCloseHandleAndNull(FAbortEvent);
 
@@ -622,5 +694,100 @@ Begin
     If TWatchAction(Action - 1) In FWatchActions Then
       FOnNotify(Self, TWatchAction(Action - 1), FileName);
 End;
+
+{ --- TFileWatchThread --- }
+
+Constructor TFileWatchThread.Create(Const Directory: String; const Filename: string; Const WndHandle: HWND);
+Begin
+  // man könnte prüfen, ob es die Datei gibt,
+  // und ob es sich wirklich um eine Datei und nicht
+  // ein Verzeichnis handelt.
+  // - das sollte im Vorfeld bereits erledigt sein (?)
+  FWndHandle := WndHandle;
+  FDirectory := Directory;
+  FFilename := Filename;
+
+  Inherited Create(False);
+End;
+
+Procedure TFileWatchThread.Execute;
+Var
+  Events: Array [0 .. 1] Of THandle;
+  NotifyRecord: PNotifyRecord;
+  ErrorMessage: String;
+  Overlap: TOverlapped;
+  hFile: THandle;
+  FullFileName: string;
+Begin
+  FillChar(Overlap, SizeOf(TOverlapped), 0);
+  Overlap.hEvent := FChangeEvent;
+
+  // set the array of events
+  Events[0] := FChangeEvent;
+  Events[1] := FAbortEvent;
+
+  While Not Terminated Do
+  begin
+    FullFileName:= IncludeTrailingPathDelimiter(FDirectory)+FFilename;
+    try
+      hFile := CreateFile(PChar(FullFileName), GENERIC_READ, 0, nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+
+      if hFile <> INVALID_HANDLE_VALUE then
+      begin
+        // Zugriff erfolgreich
+        CloseHandle(hFile);
+
+        // Message posten
+        New(NotifyRecord);
+        NotifyRecord.Code := Integer(waFileIsReadable) + 1;
+
+        // get memory for filename and fill it with data
+        GetMem(NotifyRecord.AMsg, (Length(FFilename) + 1) * SizeOf(WideChar));
+        Move(FFileName[1], NotifyRecord.AMsg^, (Length(FFilename) + 1) * SizeOf(WideChar));
+
+        // send the message about the filename information
+        PostMessage(FWndHandle, WM_DIRWATCH_NOTIFY, WParam(NotifyRecord), 0);
+
+        // eigenen Thread beenden
+        Destroy;
+      end else begin
+        // wait for file
+        Sleep(50);
+      end;
+    except
+      on E :Exception do
+      begin
+        ErrorMessage := E.Message;
+        SignalError(ErrorMessage);
+      end;
+    end;
+
+  end;
+End;
+
+Procedure TFileWatchThread.SignalError(Const ErrorMessage: ustring; ErrorCode: Cardinal; ErrorType: LParam);
+Var
+  MessageSize: Integer;
+  NotifyRecord: PNotifyRecord;
+Begin
+  New(NotifyRecord);
+
+  If ErrorCode = 0 Then
+    ErrorCode := GetLastError;
+
+  // calculate the size of the error message buffer
+  MessageSize := Length(ErrorMessage) * SizeOf(Char) + SizeOf(WideChar);
+
+  NotifyRecord.Code := ErrorCode;
+  GetMem(NotifyRecord.AMsg, MessageSize);
+  StrPCopy(NotifyRecord.AMsg, ErrorMessage);
+
+  PostMessage(FWndHandle, WM_DIRWATCH_ERROR, WParam(NotifyRecord), LParam(ErrorType));
+End;
+
+destructor TFileWatchThread.Destroy;
+begin
+   inherited Destroy;
+end;
 
 End.
