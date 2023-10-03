@@ -63,7 +63,9 @@
   * 15/05/2014 (1.4.1)
   *  - WaitForFileReady changed to function to indicate success or failure
   * 10/03/2023
-  *  - fixed Delphi 11.x compatibility according to https://stackoverflow.com/questions/76693497/tested-code-in-seattle-is-giving-an-access-violation-in-alexandria
+  *  - fixed Delphi 11.x compatibility according to
+  *    https://stackoverflow.com/questions/76693497/tested-code-in-seattle-is-giving-an-access-violation-in-alexandria and
+  *    https://www.delphipraxis.net/60995-readdirectorychangesw-wird-mehrfach-ausgeloest-warum-2.html
   * ============================================================================
 *)
 
@@ -286,7 +288,7 @@ Begin
               If NextEntry = 0 Then
                 Break
               Else
-                PByte(NotifyData) := PByte(DWORD(NotifyData) + NextEntry);
+                PByte(NotifyData) := PByte(Ulong_ptr(NotifyData) + NextEntry);
             Until Terminated;
           End
           Else
