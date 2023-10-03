@@ -315,42 +315,35 @@ Begin
               Move(NotifyData^.FileName, Pointer(NotifyRecord.AMsg)^, NotifyData^.FileNameLength);
               PWord(NativeUint(NotifyRecord.AMsg) + NotifyData^.FileNameLength)^ := 0;
 
-              {--------------}
-            // Action auswerten
-            // - nur, wenn es sich um eine Datei handelt, die hinzugefügt oder geändert wurde
-            if not isDirectory(FDirectory + NotifyRecord.AMsg) AND
-                  (TWatchAction((Integer(NotifyRecord.Code) - 1)) IN [waAdded, waModified]) then begin
-              // Neuen FileWatch Thread erstellen, damit wir benachrichtig werden, wenn die Datei zugreifbar ist
+              // if a file was added or modified start a thread for watching if the file is readable
+              if not isDirectory(FDirectory + NotifyRecord.AMsg) AND
+                    (TWatchAction((Integer(NotifyRecord.Code) - 1)) IN [waAdded, waModified]) then begin
+                // create a FileWatch Thread for notifying if read access id possible
 
-              // Prüfen, ob es für diese Datei bereits einen Thread gibt
-              createNewThread := true;
-              LockedList := FWatchFilesThread.LockList;
-              try
-                for i := LockedList.Count - 1 downto 0 do
-                begin
-                  if (TFileWatchThread(LockedList.Items[i]).FFilename = NotifyRecord.AMsg) and
-                     (TFileWatchThread(LockedList.Items[i]).FDirectory = FDirectory)then begin
-                    createNewThread := false;
+                // check if there is already a thread for this file
+                createNewThread := true;
+                LockedList := FWatchFilesThread.LockList;
+                try
+                  for i := LockedList.Count - 1 downto 0 do
+                  begin
+                    if (TFileWatchThread(LockedList.Items[i]).FFilename = NotifyRecord.AMsg) and
+                       (TFileWatchThread(LockedList.Items[i]).FDirectory = FDirectory)then begin
+                      createNewThread := false;
+                    end;
                   end;
+                finally
+                   FWatchFilesThread.UnlockList;
                 end;
-              finally
-                 FWatchFilesThread.UnlockList;
-              end;
 
-              if createNewThread then begin
+                if createNewThread then begin
 
-                FileWatchThread := TFileWatchThread.Create(FDirectory,
-                                             NotifyRecord.AMsg,
-                                             FWndHandle);
-                FWatchFilesThread.Add(FileWatchThread);
-                // FileWatchThread.OnTerminate := FileWatchThreadTerminate;
-              end;
+                  FileWatchThread := TFileWatchThread.Create(FDirectory,
+                                               NotifyRecord.AMsg,
+                                               FWndHandle);
+                  FWatchFilesThread.Add(FileWatchThread);
+                end;
 
-            end;
-            // ----
-
-
-              {--------------}
+              end; // not isDirectory()
 
               // send the message about the filename information
               PostMessage(FWndHandle, WM_DIRWATCH_NOTIFY, WParam(NotifyRecord), 0);
@@ -699,10 +692,8 @@ End;
 
 Constructor TFileWatchThread.Create(Const Directory: String; const Filename: string; Const WndHandle: HWND);
 Begin
-  // man könnte prüfen, ob es die Datei gibt,
-  // und ob es sich wirklich um eine Datei und nicht
-  // ein Verzeichnis handelt.
-  // - das sollte im Vorfeld bereits erledigt sein (?)
+  // when a new thread is created the caller has to
+  // make sure that this is a file and not a directory
   FWndHandle := WndHandle;
   FDirectory := Directory;
   FFilename := Filename;
@@ -730,14 +721,8 @@ Begin
   begin
     FullFileName:= IncludeTrailingPathDelimiter(FDirectory)+FFilename;
     try
-      hFile := CreateFile(PChar(FullFileName), GENERIC_READ, 0, nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-
-      if hFile <> INVALID_HANDLE_VALUE then
-      begin
-        // Zugriff erfolgreich
-        CloseHandle(hFile);
-
-        // Message posten
+      if WaitForFileReady(FullFileName,0) then begin
+        // post message
         New(NotifyRecord);
         NotifyRecord.Code := Integer(waFileIsReadable) + 1;
 
@@ -748,11 +733,8 @@ Begin
         // send the message about the filename information
         PostMessage(FWndHandle, WM_DIRWATCH_NOTIFY, WParam(NotifyRecord), 0);
 
-        // eigenen Thread beenden
+        // destroy this thread
         Destroy;
-      end else begin
-        // wait for file
-        Sleep(50);
       end;
     except
       on E :Exception do
