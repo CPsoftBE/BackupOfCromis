@@ -121,41 +121,35 @@ implementation
 
 function PosBack(const SubStr, S: astring): Integer;
 var
-  LastStr: astring;
-  LastPos: Integer;
+  p: PAnsiChar;
 begin
-  Result := Pos(SubStr, S);
-  LastPos := Result;
-  LastStr := S;
-
-  while LastPos > 0 do
+  if (SubStr = '') or (S = '') then
+    Result := 0
+  else
   begin
-    LastStr := Copy(LastStr, LastPos + 1, Length(LastStr) - LastPos);
-    LastPos := Pos(SubStr, LastStr);
-
-    // set the result
-    if LastPos > 0 then
-      Result := Result + LastPos;
+    p := AnsiStrRScan(PAnsiChar(S), PAnsiChar(SubStr));
+    if p = nil then
+      Result := 0
+    else
+      Result := (p - PAnsiChar(S)) + 1;
   end;
 end;
 
 function PosBack(const SubStr, S: ustring): Integer;
 var
-  LastStr: ustring;
-  LastPos: Integer;
+  i: Integer;
 begin
-  Result := Pos(SubStr, S);
-  LastPos := Result;
-  LastStr := S;
+  Result := 0;
+  if (Length(SubStr) = 0) or (Length(S) < Length(SubStr)) then
+    Exit;
 
-  while LastPos > 0 do
+  for i := Length(S) - Length(SubStr) + 1 downto 1 do
   begin
-    LastStr := Copy(LastStr, LastPos + 1, Length(LastStr) - LastPos);
-    LastPos := Pos(SubStr, LastStr);
-
-    // set the result
-    if LastPos > 0 then
-      Result := Result + LastPos;
+    if CompareMem(Pointer(@S[i]), Pointer(@SubStr[1]), Length(SubStr) * SizeOf(uchar)) then
+    begin
+      Result := i;
+      Exit;
+    end;
   end;
 end;
 
@@ -414,55 +408,33 @@ end;
 
 function AnsiReplaceChars(Chars: array of achar; NewChar: achar; S: astring): astring;
 var
-  I: Integer;
-
-  function CharInArray(TestChar: achar): Boolean;
-  var
-    K: Integer;
-  begin
-    Result := False;
-
-    for K := 0 to Length(Chars) - 1 do
-    begin
-      if TestChar = Chars[I] then
-      begin
-        Result := True;
-        Exit;
-      end;
-    end;
-  end;
-
+  i: Integer;
+  CharSet: set of achar;
 begin
-  for I := 1 to Length(S) do
-    if CharInArray(S[I]) then
-      S[I] := NewChar;
+  CharSet := [];
+  for i := Low(Chars) to High(Chars) do
+    Include(CharSet, Chars[i]);
+
+  for i := 1 to Length(S) do
+    if S[i] in CharSet then
+      S[i] := NewChar;
+
   Result := S;
 end;
 
 function WideReplaceChars(Chars: array of uchar; NewChar: uchar; S: ustring): ustring;
 var
-  I: Integer;
-
-  function CharInArray(TestChar: uchar): Boolean;
-  var
-    K: Integer;
-  begin
-    Result := False;
-
-    for K := 0 to Length(Chars) - 1 do
-    begin
-      if TestChar = Chars[I] then
-      begin
-        Result := True;
-        Exit;
-      end;
-    end;
-  end;
-
+  i: Integer;
+  CharSet: array[Word] of Boolean;
 begin
-  for I := 1 to Length(S) do
-    if CharInArray(S[I]) then
-      S[I] := NewChar;
+  FillChar(CharSet, SizeOf(CharSet), False);
+  for i := Low(Chars) to High(Chars) do
+    CharSet[Word(Chars[i])] := True;
+
+  for i := 1 to Length(S) do
+    if CharSet[Word(S[i])] then
+      S[i] := NewChar;
+
   Result := S;
 end;
 

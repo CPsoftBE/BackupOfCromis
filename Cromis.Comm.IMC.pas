@@ -418,15 +418,15 @@ begin
 
       if DataLength > 0 then
       begin
-        ReadBuff(AContext.Connection, DataLength, IDAsBytes);
         SetLength(IDAsString, DataLength div SizeOf(uchar));
+        ReadBuff(AContext.Connection, DataLength, IDAsBytes);
         Move(IDAsBytes[0], IDAsString[1], DataLength);
         Request.ID := IDAsString;
       end;
 
       // read the message data
       DataLength := ReadInt(AContext.Connection);
-      ReadStream(Request.Data.Storage, DataLength, False);
+      Request.Data.Storage.CopyFrom(AContext.Connection.Socket, DataLength);
 
       Request.Data.Storage.Seek(0, soFromBeginning);
       try

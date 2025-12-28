@@ -301,7 +301,6 @@ end;
 procedure TIPCServer.OnExecuteTask(const Task: ITask);
 var
   AResult: Boolean;
-  AllRead: Int64;
   DataSize: Int64;
   IDLength: Int64;
   BytesRead: Cardinal;
@@ -321,14 +320,13 @@ var
 
   // pipe handle
   PipeHandle: THandle;
-  // id as array of byte
-  IDAsBytes: array of Byte;
   // input buffer of cBufferSize bytes
-  DataBuffer: array [0..cBufferSize - 1] of Byte;
+  DataBuffer: PByte;
 begin
   inherited;
 
   Context := nil;
+  GetMem(DataBuffer, cBufferSize);
   try
     PipeHandle := Task.Values.Get(cParamPipeHandle).AsInt64;
     try
@@ -358,10 +356,9 @@ begin
           if IDLength > 0 then
           begin
             // set ID bytes length
-            SetLength(IDAsBytes, IDLength);
             SetLength(IDAsString, IDLength div SizeOf(uchar));
             // then read the actual ID of the IPC data from the pipe
-            AResult := ReadFile(PipeHandle, IDAsBytes[0], IDLength, BytesRead, nil);
+            AResult := ReadFile(PipeHandle, Pointer(IDAsString)^, IDLength, BytesRead, nil);
 
             // check if the result is a valid response
             if not AResult and (GetLastError <> ERROR_MORE_DATA) then
@@ -371,7 +368,6 @@ begin
             end;
 
             // first read the ID of the request
-            Move(IDAsBytes[0], IDAsString[1], IDLength);
             InStream.ID := IDAsString;
           end;
 
@@ -386,22 +382,7 @@ begin
           end;
 
           if DataSize > 0 then
-          begin
-            AllRead := 0;
-
-            repeat
-              AResult := ReadFile(PipeHandle, DataBuffer[0], cBufferSize, BytesRead, nil);
-              InStream.Data.Storage.Write(DataBuffer[0], BytesRead);
-              Inc(AllRead, BytesRead);
-
-              // check if the result is a valid response
-              if not AResult and (GetLastError <> ERROR_MORE_DATA) then
-              begin
-                NotifyServerError(Context, GetLastError, 'ReadFile failed while reading message data');
-                Exit;
-              end;
-            until AllRead = DataSize;
-          end;
+            InStream.Data.Storage.CopyFrom(THandleStream.Create(PipeHandle), DataSize);
 
           // create result and call event
           OutStream := AcquireIPCData;
@@ -422,20 +403,22 @@ begin
 
           // write the length and the actual id to byte array
           IDLength := Length(OutStream.ID) * SizeOf(uchar);
-          SetLength(IDAsBytes, IDLength + SizeOf(Int64));
-          Move(IDLength, IDAsBytes[0], SizeOf(Int64));
           DataSize := OutStream.Data.Storage.Size;
 
-          // only if there is data
-          if IDLength > 0 then
-            Move(OutStream.ID[1], IDAsBytes[SizeOf(Int64)], IDLength);
-
           // write the id as first data to the pipe
-          if not WriteFile(PipeHandle, IDAsBytes[0], Length(IDAsBytes), BytesWritten, nil) then
+          if not WriteFile(PipeHandle, IDLength, SizeOf(Int64), BytesWritten, nil) then
           begin
             NotifyServerError(Context, GetLastError, 'WriteFile failed while writing message ID and data');
             Exit;
           end;
+
+          // only if there is data
+          if IDLength > 0 then
+            if not WriteFile(PipeHandle, Pointer(OutStream.ID)^, IDLength, BytesWritten, nil) then
+            begin
+              NotifyServerError(Context, GetLastError, 'WriteFile failed while writing message ID and data');
+              Exit;
+            end;
 
           // write the data size so that server knows how much it will get
           if not WriteFile(PipeHandle, DataSize, SizeOf(Int64), BytesWritten, nil) then
@@ -447,18 +430,18 @@ begin
           // check if IPC data is empty
           if OutStream.Data.Storage.Size > 0 then
           begin
-            BytesRead := OutStream.Data.Storage.Read(DataBuffer[0], cBufferSize);
+            BytesRead := OutStream.Data.Storage.Read(DataBuffer^, cBufferSize);
 
             while BytesRead > 0 do
             begin
-              if not WriteFile(PipeHandle, DataBuffer[0], BytesRead, BytesWritten, nil) then
+              if not WriteFile(PipeHandle, DataBuffer^, BytesRead, BytesWritten, nil) then
               begin
                 NotifyServerError(Context, GetLastError, 'WriteFile failed while writing message data');
                 Exit;
               end;
 
               // read the next chunk from the input data stream
-              BytesRead := OutStream.Data.Storage.Read(DataBuffer[0], cBufferSize);
+              BytesRead := OutStream.Data.Storage.Read(DataBuffer^, cBufferSize);
             end;
           end;
         until IDLength = -1;
@@ -475,6 +458,8 @@ begin
       ErrorMessage := Format('Error in OnExecuteTask: %s', [E.Message]);
       NotifyServerError(Context, GetLastError, ErrorMessage);
     end;
+  finally
+    FreeMem(DataBuffer);
   end;
 end;
 
