@@ -432,7 +432,7 @@ Begin
   FDirectory := Directory;
   FFilter := TypeFilter;
 
-  // für die Verwaltung der FileWatchThreads
+  // fï¿½r die Verwaltung der FileWatchThreads
   FWatchFilesThread := TThreadList.Create;
 
   Inherited Create(False);
