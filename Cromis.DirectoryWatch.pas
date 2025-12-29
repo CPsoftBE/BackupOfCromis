@@ -313,16 +313,28 @@ begin
             NextEntry := NotifyData^.NextEntryOffset;
 
             New(NotifyRecord);
-            NotifyRecord.Code := NotifyData^.Action;
-            // get memory for filename and fill it with data
-            GetMem(NotifyRecord.AMsg, NotifyData^.FileNameLength + SizeOf(WideChar));
-            Move(NotifyData^.FileName, Pointer(NotifyRecord.AMsg)^, NotifyData^.FileNameLength);
-            PWord(Cardinal(NotifyRecord.AMsg) + NotifyData^.FileNameLength)^ := 0;
+            try
+              NotifyRecord.Code := NotifyData^.Action;
+              // get memory for filename and fill it with data
+              GetMem(NotifyRecord.AMsg, NotifyData^.FileNameLength + SizeOf(WideChar));
+              try
+                Move(NotifyData^.FileName, Pointer(NotifyRecord.AMsg)^, NotifyData^.FileNameLength);
+                PWord(Cardinal(NotifyRecord.AMsg) + NotifyData^.FileNameLength)^ := 0;
 
-            // send the message about the filename information
-            case FSignalType of
-              stMessages: PostMessage(FWndHandle, WM_DIRWATCH_NOTIFY, WParam(NotifyRecord), 0);
-              stThreaded: TNotifyThread(FNotifyThread).SignalNotify(NotifyRecord);
+                // send the message about the filename information
+                case FSignalType of
+                  stMessages: PostMessage(FWndHandle, WM_DIRWATCH_NOTIFY, WParam(NotifyRecord), 0);
+                  stThreaded: TNotifyThread(FNotifyThread).SignalNotify(NotifyRecord);
+                end;
+              except
+                // On exception, free the GetMem'd memory
+                FreeMem(NotifyRecord.AMsg);
+                raise;
+              end;
+            except
+              // On exception, free the New'd record
+              Dispose(NotifyRecord);
+              raise;
             end;
 
             // advance to the next entry in the current buffer
@@ -361,24 +373,35 @@ var
   NotifyRecord: PNotifyRecord;
 begin
   New(NotifyRecord);
+  try
+    if ErrorCode = 0 then
+      ErrorCode := GetLastError;
 
-  if ErrorCode = 0 then
-    ErrorCode := GetLastError;
+    // calculate the size of the error message buffer
+    MessageSize := Length(ErrorMessage) * SizeOf(Char) + SizeOf(WideChar);
 
-  // calculate the size of the error message buffer
-  MessageSize := Length(ErrorMessage) * SizeOf(Char) + SizeOf(WideChar);
-
-  NotifyRecord.Code := ErrorCode;
-  GetMem(NotifyRecord.AMsg, MessageSize);
+    NotifyRecord.Code := ErrorCode;
+    GetMem(NotifyRecord.AMsg, MessageSize);
+    try
 {$IFNDEF UNICODE}
-  WStrPCopy(NotifyRecord.AMsg, ErrorMessage);
+      WStrPCopy(NotifyRecord.AMsg, ErrorMessage);
 {$ELSE}
-  StrPCopy(NotifyRecord.AMsg, ErrorMessage);
+      StrPCopy(NotifyRecord.AMsg, ErrorMessage);
 {$ENDIF}
 
-  case FSignalType of
-    stMessages: PostMessage(FWndHandle, WM_DIRWATCH_ERROR, WParam(NotifyRecord), 0);
-    stThreaded: TNotifyThread(FNotifyThread).SignalNotify(NotifyRecord);
+      case FSignalType of
+        stMessages: PostMessage(FWndHandle, WM_DIRWATCH_ERROR, WParam(NotifyRecord), 0);
+        stThreaded: TNotifyThread(FNotifyThread).SignalNotify(NotifyRecord);
+      end;
+    except
+      // On exception, free the GetMem'd memory
+      FreeMem(NotifyRecord.AMsg);
+      raise;
+    end;
+  except
+    // On exception, free the New'd record
+    Dispose(NotifyRecord);
+    // Swallow exception in error handler to prevent cascading failures
   end;
 end;
 
@@ -476,8 +499,14 @@ begin
     AResult := WaitForSingleObject(ThreadHandle, cShutdownTimeout);
 
     // check if we timed out
+    // NOTE: Removed dangerous TerminateThread call
+    // Thread will clean up via FreeOnTerminate if it's still running
     if AResult = WAIT_TIMEOUT then
-      TerminateThread(ThreadHandle, 0);
+    begin
+      // Log timeout but don't force terminate - prevents resource corruption
+      if Assigned(FOnError) then
+        FOnError(Self, ERROR_TIMEOUT, 'Warning: Watch thread did not stop within timeout period');
+    end;
 
     // free the watch thread
     FreeAndNil(FWatchThread);
@@ -492,8 +521,13 @@ begin
       AResult := WaitForSingleObject(ThreadHandle, cShutdownTimeout);
 
       // check if we timed out
+      // NOTE: Removed dangerous TerminateThread call
       if AResult = WAIT_TIMEOUT then
-        TerminateThread(ThreadHandle, 0);
+      begin
+        // Log timeout but don't force terminate
+        if Assigned(FOnError) then
+          FOnError(Self, ERROR_TIMEOUT, 'Warning: Notify thread did not stop within timeout period');
+      end;
 
       FreeAndNil(FNotifyThread);
     end

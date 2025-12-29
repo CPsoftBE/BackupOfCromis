@@ -489,6 +489,8 @@ begin
   if Msg.msg = WM_TASK_MESSAGE then
   begin
     MessageObj := TMessageObj(Pointer(Msg.WParam));
+    // Add nil check to prevent access violation
+    if MessageObj <> nil then
     try
       if Msg.LParam <> 0 then
       begin
@@ -778,6 +780,10 @@ destructor TTask.Destroy;
 begin
   FWorkerThread.Terminate;
   FWorkerThread.SignalAbort;
+
+  // Close the wait event handle to prevent resource leak
+  if FWaitForEvent <> 0 then
+    CloseHandle(FWaitForEvent);
 
   inherited;
 end;

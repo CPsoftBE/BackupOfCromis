@@ -568,8 +568,13 @@ begin
     AResult := WaitForSingleObject(FListeningThread.Handle, cShutdownTimeout);
 
     // check if we timed out
+    // NOTE: Removed dangerous TerminateThread call - thread will be freed by FreeOnTerminate
+    // If thread doesn't respond to abort signal, better to leak than corrupt process state
     if AResult = WAIT_TIMEOUT then
-      TerminateThread(FListeningThread.Handle, 0);
+    begin
+      // Log warning but don't terminate - FreeOnTerminate will clean up eventually
+      NotifyServerError(nil, ERROR_TIMEOUT, 'Warning: Listening thread did not stop within timeout period');
+    end;
 
     // clear contexts and events
     CloseHandle(FAbortEvent);
@@ -656,10 +661,11 @@ begin
     // send signal
     DisconnectSignal := -1;
     WriteFile(FPipeHandle, DisconnectSignal, SizeOf(Int64), ABytes, nil);
+    // close handle only when it's valid
+    CloseHandle(FPipeHandle);
   end;
 
-  // always close handle
-  CloseHandle(FPipeHandle);
+  // mark as disconnected
   FIsConnected := False;
   FPipeHandle := 0;
 end;
