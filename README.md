@@ -13,4 +13,4 @@ Cromis.IMC: Fast IMC client server communication based on Indy TCP. Very lightwe
 
 Cromis.DirectoryWatch: Directory watch class, that can monitor the selected directory included with sub-directories.
 
-Note: Please also check The Limagito-patches branch
+Note: Refactoring by Claude AI - 20251229
